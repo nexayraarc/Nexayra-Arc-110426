@@ -55,7 +55,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md px-6 animate-fade-in-up">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-2">
-            <img src="/nexayra.png" alt="Nexayra Arc" className="h-12 w-auto" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            <img src="/nexayra.png" alt="Nexayra Arc" className="h-20 w-auto" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
             <div>
             </div>
           </div>
