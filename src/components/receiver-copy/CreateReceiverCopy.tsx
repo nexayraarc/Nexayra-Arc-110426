@@ -19,7 +19,7 @@ export default function CreateReceiverCopy(){
   const [purposeDescription,setPurposeDescription]=useState(""); const [receivedBy,setReceivedBy]=useState(""); const [companyName,setCompanyName]=useState("");
   const [contactNumber,setContactNumber]=useState(""); const [email,setEmail]=useState("");
   const [isWorking,setIsWorking]=useState(false); const [message,setMessage]=useState<{text:string;type:"success"|"error"}|null>(null);
-  const [previewUrl,setPreviewUrl]=useState<string|null>(null); const [pendingData,setPendingData]=useState<ReceiverCopyData|null>(null);
+  const [previewUrl,setPreviewUrl]=useState<string|null>(null);
 
   useEffect(()=>{setDate(formatToday());try{const s=localStorage.getItem(DRAFT_KEY);if(!s)return;const d=JSON.parse(s);setReceivedFrom(d.receivedFrom??"");setAmount(d.amount??"");setChequeNumber(d.chequeNumber??"");setBankName(d.bankName??"");setChequeDate(d.chequeDate??"");setPurposeDescription(d.purposeDescription??"");setReceivedBy(d.receivedBy??"");setCompanyName(d.companyName??"");setContactNumber(d.contactNumber??"");setEmail(d.email??"");}catch{}},[]);
   useEffect(()=>{localStorage.setItem(DRAFT_KEY,JSON.stringify({receivedFrom,amount,chequeNumber,bankName,chequeDate,purposeDescription,receivedBy,companyName,contactNumber,email}));});
@@ -35,14 +35,46 @@ export default function CreateReceiverCopy(){
   const handlePreview=async()=>{
     const err=validate();if(err){setMessage({text:err,type:"error"});return;}
     try{setIsWorking(true);setMessage(null);
-      const res=await apiCall<{receiverCopy:ReceiverCopyData}>("/api/receiver-copy",{method:"POST",body:buildPayload()});
-      setPendingData(res.receiverCopy);setDocumentNo(res.receiverCopy.documentNo);
-      const blob=await generatePdfBlob(res.receiverCopy);setPreviewUrl(URL.createObjectURL(blob));
+      const payload=buildPayload();
+      const tempData:ReceiverCopyData={...payload,documentNo:"PREVIEW"};
+      const blob=await generatePdfBlob(tempData);setPreviewUrl(URL.createObjectURL(blob));
     }catch(e:any){setMessage({text:e.message||"Failed.",type:"error"});}finally{setIsWorking(false);}
   };
 
-  const handleDownload=async()=>{if(!pendingData)return;try{setIsWorking(true);const blob=await generatePdfBlob(pendingData);const url=URL.createObjectURL(blob);Object.assign(document.createElement("a"),{href:url,download:`${pendingData.documentNo}.pdf`}).click();URL.revokeObjectURL(url);setMessage({text:`${pendingData.documentNo} downloaded.`,type:"success"});setPreviewUrl(null);reset();}catch(e:any){setMessage({text:e.message,type:"error"});}finally{setIsWorking(false);}};
-  const handleShare=async()=>{if(!pendingData)return;try{setIsWorking(true);const blob=await generatePdfBlob(pendingData);const pdfFile=new File([blob],`${pendingData.documentNo}.pdf`,{type:"application/pdf"});const text=[`Receipt: ${pendingData.documentNo}`,`From: ${pendingData.receivedFrom}`,`Amount: AED ${pendingData.amount}`].join("\n");if(navigator.share){if(navigator.canShare?.({files:[pdfFile]}))await navigator.share({title:pendingData.documentNo,text,files:[pdfFile]});else await navigator.share({title:pendingData.documentNo,text});}else await navigator.clipboard.writeText(text);setMessage({text:`Shared ${pendingData.documentNo}.`,type:"success"});setPreviewUrl(null);reset();}catch(e:any){setMessage({text:e.message,type:"error"});}finally{setIsWorking(false);}};
+  const handleDownload=async()=>{
+    try{
+      setIsWorking(true);setMessage(null);
+      const res=await apiCall<{receiverCopy:ReceiverCopyData}>("/api/receiver-copy",{method:"POST",body:buildPayload()});
+      setDocumentNo(res.receiverCopy.documentNo);
+      const blob=await generatePdfBlob(res.receiverCopy);
+      const url=URL.createObjectURL(blob);
+      Object.assign(document.createElement("a"),{href:url,download:`${res.receiverCopy.documentNo}.pdf`}).click();
+      URL.revokeObjectURL(url);
+      setMessage({text:`${res.receiverCopy.documentNo} saved and downloaded.`,type:"success"});
+      setPreviewUrl(null);reset();
+    }catch(e:any){setMessage({text:e.message||"Download failed.",type:"error"});}
+    finally{setIsWorking(false);}
+  };
+
+  const handleShare=async()=>{
+    try{
+      setIsWorking(true);setMessage(null);
+      const res=await apiCall<{receiverCopy:ReceiverCopyData}>("/api/receiver-copy",{method:"POST",body:buildPayload()});
+      setDocumentNo(res.receiverCopy.documentNo);
+      const blob=await generatePdfBlob(res.receiverCopy);
+      const pdfFile=new File([blob],`${res.receiverCopy.documentNo}.pdf`,{type:"application/pdf"});
+      const text=[`Receipt: ${res.receiverCopy.documentNo}`,`From: ${res.receiverCopy.receivedFrom}`,`Amount: AED ${res.receiverCopy.amount}`].join("\n");
+      if(navigator.share){
+        if(navigator.canShare?.({files:[pdfFile]})) await navigator.share({title:res.receiverCopy.documentNo,text,files:[pdfFile]});
+        else await navigator.share({title:res.receiverCopy.documentNo,text});
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      setMessage({text:`${res.receiverCopy.documentNo} saved and shared.`,type:"success"});
+      setPreviewUrl(null);reset();
+    }catch(e:any){setMessage({text:e.message||"Share failed.",type:"error"});}
+    finally{setIsWorking(false);}
+  };
 
   const inp="w-full px-4 py-3 bg-white border border-navy-200 rounded-xl text-navy placeholder-navy-300 text-sm transition-all duration-200 hover:border-navy-300";
   const lbl="block text-navy-500 text-xs font-bold uppercase tracking-wider mb-1.5";

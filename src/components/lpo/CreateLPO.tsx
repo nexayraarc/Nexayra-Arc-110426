@@ -35,7 +35,6 @@ export default function CreateLPO() {
   const [isWorking, setIsWorking] = useState(false);
   const [message, setMessage] = useState<{text:string;type:"success"|"error"}|null>(null);
   const [previewUrl, setPreviewUrl] = useState<string|null>(null);
-  const [pendingLpo, setPendingLpo] = useState<LpoPdfData|null>(null);
 
   useEffect(() => { try { const s = localStorage.getItem(DRAFT_KEY); if(!s) return; const d=JSON.parse(s); setClientName(d.clientName??""); setClientPhone(d.clientPhone??""); setProject(d.project??""); setSiteLocation(d.siteLocation??""); setContact(d.contact??""); setReference(d.reference??""); setVendorName(d.vendorName??""); setVendorAddress(d.vendorAddress??""); setVendorPhone(d.vendorPhone??""); setVendorTRN(d.vendorTRN??""); setPaymentPreset(d.paymentPreset??"30"); setCustomPaymentDays(d.customPaymentDays??""); setDeliveryNumber(d.deliveryNumber??""); setDeliveryPreset(d.deliveryPreset??"Days"); setCustomDeliveryTime(d.customDeliveryTime??""); setRequestedBy(d.requestedBy??""); setPreparedBy(d.preparedBy??""); if(Array.isArray(d.items)&&d.items.length>0) setItems(d.items); } catch{} }, []);
   useEffect(() => { localStorage.setItem(DRAFT_KEY, JSON.stringify({clientName,clientPhone,project,siteLocation,contact,reference,vendorName,vendorAddress,vendorPhone,vendorTRN,paymentPreset,customPaymentDays,deliveryNumber,deliveryPreset,customDeliveryTime,requestedBy,preparedBy,items})); });
@@ -72,39 +71,45 @@ export default function CreateLPO() {
     const err = validate(); if(err){setMessage({text:err,type:"error"});return;}
     try {
       setIsWorking(true); setMessage(null);
-      const res = await apiCall<{lpo:LpoPdfData}>("/api/lpo",{method:"POST",body:buildPayload()});
-      setPendingLpo(res.lpo); setNxrNo(res.lpo.nxrNo);
-      const blob = await generatePdfBlob(res.lpo);
-      const url = URL.createObjectURL(blob);
-      setPreviewUrl(url);
+      const payload = buildPayload();
+      const tempLpo: LpoPdfData = { ...payload, nxrNo: 0, approved: false, approvedBy: "", approvedAt: undefined, shareLink: undefined };
+      const blob = await generatePdfBlob(tempLpo);
+      setPreviewUrl(URL.createObjectURL(blob));
     } catch(e:any){setMessage({text:e.message||"Failed.",type:"error"});}
     finally{setIsWorking(false);}
   };
 
   const handleDownload = async () => {
-    if(!pendingLpo) return;
     try {
-      setIsWorking(true);
-      const blob = await generatePdfBlob(pendingLpo);
+      setIsWorking(true); setMessage(null);
+      const res = await apiCall<{lpo:LpoPdfData}>("/api/lpo",{method:"POST",body:buildPayload()});
+      setNxrNo(res.lpo.nxrNo);
+      const blob = await generatePdfBlob(res.lpo);
       const url = URL.createObjectURL(blob);
-      Object.assign(document.createElement("a"),{href:url,download:`LPO-${pendingLpo.nxrNo}.pdf`}).click();
+      Object.assign(document.createElement("a"),{href:url,download:`LPO-${res.lpo.nxrNo}.pdf`}).click();
       URL.revokeObjectURL(url);
-      setMessage({text:`LPO #${pendingLpo.nxrNo} downloaded.`,type:"success"});
+      setMessage({text:`LPO #${res.lpo.nxrNo} saved and downloaded.`,type:"success"});
       setPreviewUrl(null); clearDraft();
     } catch(e:any){setMessage({text:e.message||"Download failed.",type:"error"});}
     finally{setIsWorking(false);}
   };
 
   const handleShare = async () => {
-    if(!pendingLpo) return;
     try {
-      setIsWorking(true);
-      const blob = await generatePdfBlob(pendingLpo);
-      const pdfFile = new File([blob],`LPO-${pendingLpo.nxrNo}.pdf`,{type:"application/pdf"});
-      const text = [`LPO #${pendingLpo.nxrNo}`,`Client: ${pendingLpo.clientName}`,`Total: AED ${pendingLpo.total.toFixed(2)}`].join("\n");
-      if(navigator.share){const files=[pdfFile,...attachments];if(navigator.canShare?.({files}))await navigator.share({title:`LPO #${pendingLpo.nxrNo}`,text,files});else await navigator.share({title:`LPO #${pendingLpo.nxrNo}`,text});}
-      else await navigator.clipboard.writeText(text);
-      setMessage({text:`LPO #${pendingLpo.nxrNo} shared.`,type:"success"});
+      setIsWorking(true); setMessage(null);
+      const res = await apiCall<{lpo:LpoPdfData}>("/api/lpo",{method:"POST",body:buildPayload()});
+      setNxrNo(res.lpo.nxrNo);
+      const blob = await generatePdfBlob(res.lpo);
+      const pdfFile = new File([blob],`LPO-${res.lpo.nxrNo}.pdf`,{type:"application/pdf"});
+      const text = [`LPO #${res.lpo.nxrNo}`,`Client: ${res.lpo.clientName}`,`Total: AED ${res.lpo.total.toFixed(2)}`].join("\n");
+      if(navigator.share){
+        const files=[pdfFile,...attachments];
+        if(navigator.canShare?.({files})) await navigator.share({title:`LPO #${res.lpo.nxrNo}`,text,files});
+        else await navigator.share({title:`LPO #${res.lpo.nxrNo}`,text});
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      setMessage({text:`LPO #${res.lpo.nxrNo} saved and shared.`,type:"success"});
       setPreviewUrl(null); clearDraft();
     } catch(e:any){setMessage({text:e.message||"Share failed.",type:"error"});}
     finally{setIsWorking(false);}
@@ -116,7 +121,7 @@ export default function CreateLPO() {
 
   return (
     <div className="max-w-5xl mx-auto animate-fade-in-up">
-      <PreviewModal pdfUrl={previewUrl} title={`LPO #${nxrNo || "Draft"}`} onClose={()=>{if(previewUrl)URL.revokeObjectURL(previewUrl);setPreviewUrl(null);}} onDownload={handleDownload} onShare={handleShare} isWorking={isWorking} />
+      <PreviewModal pdfUrl={previewUrl} title={`LPO #${nxrNo||"Draft"}`} onClose={()=>{if(previewUrl)URL.revokeObjectURL(previewUrl);setPreviewUrl(null);}} onDownload={handleDownload} onShare={handleShare} isWorking={isWorking} />
 
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>

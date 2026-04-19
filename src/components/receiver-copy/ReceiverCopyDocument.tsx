@@ -50,7 +50,7 @@ const st=StyleSheet.create({
   row:{flexDirection:"row",alignItems:"flex-start",marginBottom:14,gap:10},
   label:{width:140,fontWeight:"bold",color:"#1c2143",lineHeight:1.35,fontFamily:"Times-Bold"},
   vl:{flex:1,minHeight:22,borderBottomWidth:1,borderBottomColor:"#1c2143",justifyContent:"center",paddingBottom:4},
-  sl:{flex:1,minHeight:40,borderBottomWidth:1,borderBottomColor:"#1c2143",justifyContent:"flex-end",paddingBottom:4},
+  sl:{flex:1,minHeight:40,borderBottomWidth:1,borderBottomColor:"#1c2143",justifyContent:"flex-start",paddingBottom:4},
   vt:{fontSize:11,color:"#1c2143",lineHeight:1.35},
   si:{width:90,height:34,objectFit:"contain",marginTop:8,marginBottom:4},
   sti:{width:60,height:60,objectFit:"contain",marginTop:8,marginBottom:4},

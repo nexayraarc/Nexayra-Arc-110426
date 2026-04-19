@@ -16,7 +16,7 @@ const DEFAULT_CLOSING = "We hope that our proposal is in line with your requirem
 const DEFAULT_SIGNATORY_NAME = "Ashish Dhir";
 const DEFAULT_SIGNATORY_DESIGNATION = "Operation Manager";
 const DEFAULT_EXCLUSIONS = ["Any materials required for the installation, including but not limited to AC units, ducting materials, communication cables, refrigerant, rubber pads. and other accessories, are not included in this quotation. All materials shall be provided by the contractor.","Any kind of civil works such as foundations or steel structural support for indoor units, necessary openings for the passage of the piping and closing the openings after erection, external openings, false ceiling cutting & opening etc.","All electric items as per local regulations distribution board, control panel, isolator, ELCB, P.F correction capacitors, U.V relay etc., power wiring/Conduits, up to the junction box of air conditioning units.","Cranage, scaffolding, and man lift required for the installation works.","Generator connection & shifting.","Power and water connections required for installation and erection works.","Third party testing & commissioning.","Electrical & power connection.","Cladding / trucking works."];
-const DEFAULT_PAYMENT_TERMS = ["Payments in UAE Dirham to be paid in UAE as follows;","i. 25% advance payment","ii. The balance will be made against progress of works.","iii. Our price doesn't include any item which is not mentioned in this proposal."];
+const DEFAULT_PAYMENT_TERMS = ["Payments in UAE Dirham to be paid in UAE as follows;"," 25% advance payment"," The balance will be made against progress of works."," Our price doesn't include any item which is not mentioned in this proposal."];
 
 function formatToday():string{const n=new Date();return`${String(n.getDate()).padStart(2,"0")}-${n.toLocaleString("en-US",{month:"long"})}-${n.getFullYear()}`;}
 function toNumber(v:string):number{const p=Number(String(v).replace(/,/g,"").replace(/\/-/g,"").trim());return Number.isFinite(p)?p:0;}
@@ -27,13 +27,13 @@ function fmtMoney(v:number):string{return`${v.toLocaleString("en-US",{minimumFra
 export default function CreateQuotation(){
   const [quotationNo,setQuotationNo]=useState("(auto)");
   const [date,setDate]=useState(""); const [to,setTo]=useState(""); const [attn,setAttn]=useState(""); const [project,setProject]=useState(""); const [serviceTitle,setServiceTitle]=useState("");
-  const [inclusionItems,setInclusionItems]=useState<string[]>([""]); const [items,setItems]=useState<QuotationItem[]>([{srNo:"1",description:"",unit:"",amount:""}]);
+  const [inclusionItems,setInclusionItems]=useState<string[]>([""]); const [exclusionItems,setExclusionItems]=useState<string[]>(DEFAULT_EXCLUSIONS); const [items,setItems]=useState<QuotationItem[]>([{srNo:"1",description:"",unit:"",amount:""}]);
   const [attachments,setAttachments]=useState<File[]>([]); const [isWorking,setIsWorking]=useState(false); const [message,setMessage]=useState<{text:string;type:"success"|"error"}|null>(null);
-  const [validityMode,setValidityMode]=useState("30"); const [customValidityDays,setCustomValidityDays]=useState("");
+  const [validityMode,setValidityMode]=useState("30"); const [customValidityDays,setCustomValidityDays]=useState(""); const [paymentTerms,setPaymentTerms]=useState<string[]>(DEFAULT_PAYMENT_TERMS);
   const [previewUrl,setPreviewUrl]=useState<string|null>(null); const [pendingData,setPendingData]=useState<QuotationData|null>(null);
 
-  useEffect(()=>{setDate(formatToday());try{const s=localStorage.getItem(DRAFT_KEY);if(!s)return;const d=JSON.parse(s);setTo(d.to??"");setAttn(d.attn??"");setProject(d.project??"");setServiceTitle(d.serviceTitle??"");if(Array.isArray(d.inclusionItems)&&d.inclusionItems.length>0)setInclusionItems(d.inclusionItems);if(Array.isArray(d.items)&&d.items.length>0)setItems(d.items);setValidityMode(d.validityMode??"30");setCustomValidityDays(d.customValidityDays??"");}catch{}},[]);
-  useEffect(()=>{localStorage.setItem(DRAFT_KEY,JSON.stringify({to,attn,project,serviceTitle,inclusionItems,items,validityMode,customValidityDays}));});
+  useEffect(()=>{setDate(formatToday());try{const s=localStorage.getItem(DRAFT_KEY);if(!s)return;const d=JSON.parse(s);setTo(d.to??"");setAttn(d.attn??"");setProject(d.project??"");setServiceTitle(d.serviceTitle??"");if(Array.isArray(d.inclusionItems)&&d.inclusionItems.length>0)setInclusionItems(d.inclusionItems);if(Array.isArray(d.exclusionItems)&&d.exclusionItems.length>0)setExclusionItems(d.exclusionItems);if(Array.isArray(d.items)&&d.items.length>0)setItems(d.items);setValidityMode(d.validityMode??"30");setCustomValidityDays(d.customValidityDays??"");if(Array.isArray(d.paymentTerms)&&d.paymentTerms.length>0)setPaymentTerms(d.paymentTerms);}catch{}},[]);
+  useEffect(()=>{localStorage.setItem(DRAFT_KEY,JSON.stringify({to,attn,project,serviceTitle,inclusionItems,exclusionItems,items,validityMode,customValidityDays,paymentTerms}));});
 
   const totals=useMemo(()=>{const t=items.reduce((s,i)=>s+toNumber(i.amount||"0"),0);const vat=t*0.05;return{totalWithoutVat:t,vatPercent:5,vatAmount:vat,totalWithVat:t+vat};},[items]);
   const autoWords=useMemo(()=>amountToWords(totals.totalWithVat),[totals.totalWithVat]);
@@ -47,27 +47,66 @@ export default function CreateQuotation(){
   const updateInclusion=(i:number,v:string)=>setInclusionItems(p=>p.map((x,j)=>j===i?v:x));
   const addInclusion=()=>setInclusionItems(p=>[...p,""]);
   const removeInclusion=(i:number)=>setInclusionItems(p=>p.length===1?p:p.filter((_,j)=>j!==i));
+  const updateExclusion=(i:number,v:string)=>setExclusionItems(p=>p.map((x,j)=>j===i?v:x));
+  const addExclusion=()=>setExclusionItems(p=>[...p,""]);
+  const removeExclusion=(i:number)=>setExclusionItems(p=>p.length===1?p:p.filter((_,j)=>j!==i));
+  const updatePaymentTerm=(i:number,v:string)=>setPaymentTerms(p=>p.map((x,j)=>j===i?v:x));
+  const addPaymentTerm=()=>setPaymentTerms(p=>[...p,""]);
+  const removePaymentTerm=(i:number)=>setPaymentTerms(p=>p.length===1?p:p.filter((_,j)=>j!==i));
 
-  const validate=()=>{if(!serviceTitle.trim())return"Please enter the service title.";if(!items.some(i=>i.description.trim()||i.amount.trim()))return"Please enter at least one BOQ row.";if(!inclusionItems.some(i=>i.trim()))return"Please enter at least one inclusion.";return"";};
+  const validate=()=>{if(!serviceTitle.trim())return"Please enter the service title.";if(!items.some(i=>i.description.trim()||i.amount.trim()))return"Please enter at least one BOQ row.";if(!inclusionItems.some(i=>i.trim()))return"Please enter at least one inclusion.";if(!exclusionItems.some(i=>i.trim()))return"Please enter at least one exclusion.";if(!paymentTerms.some(i=>i.trim()))return"Please enter at least one payment term.";return"";};
 
-  const buildPayload=():Omit<QuotationData,"quotationNo">=>({date:date.trim(),to:to.trim(),attn:attn.trim(),project:project.trim(),serviceTitle:serviceTitle.trim(),introParagraph,annexure1Title:DEFAULT_ANNEXURE_1,annexure2Title:DEFAULT_ANNEXURE_2,annexure3Title:DEFAULT_ANNEXURE_3,closingParagraph:DEFAULT_CLOSING,signatoryName:DEFAULT_SIGNATORY_NAME,signatoryDesignation:DEFAULT_SIGNATORY_DESIGNATION,inclusionItems:inclusionItems.filter(i=>i.trim()),exclusionItems:DEFAULT_EXCLUSIONS,boqItems:items,totalWithoutVat:+totals.totalWithoutVat.toFixed(2),vatPercent:totals.vatPercent,vatAmount:+totals.vatAmount.toFixed(2),totalWithVat:+totals.totalWithVat.toFixed(2),amountInWords:autoWords,paymentTerms:DEFAULT_PAYMENT_TERMS,validity:validityText,attachmentNames:attachments.map(f=>f.name)});
+  const buildPayload=():Omit<QuotationData,"quotationNo">=>({date:date.trim(),to:to.trim(),attn:attn.trim(),project:project.trim(),serviceTitle:serviceTitle.trim(),introParagraph,annexure1Title:DEFAULT_ANNEXURE_1,annexure2Title:DEFAULT_ANNEXURE_2,annexure3Title:DEFAULT_ANNEXURE_3,closingParagraph:DEFAULT_CLOSING,signatoryName:DEFAULT_SIGNATORY_NAME,signatoryDesignation:DEFAULT_SIGNATORY_DESIGNATION,inclusionItems:inclusionItems.filter(i=>i.trim()),exclusionItems:exclusionItems.filter(i=>i.trim()),boqItems:items,totalWithoutVat:+totals.totalWithoutVat.toFixed(2),vatPercent:totals.vatPercent,vatAmount:+totals.vatAmount.toFixed(2),totalWithVat:+totals.totalWithVat.toFixed(2),amountInWords:autoWords,paymentTerms:paymentTerms.filter(i=>i.trim()),validity:validityText,attachmentNames:attachments.map(f=>f.name)});
 
-  const reset=()=>{localStorage.removeItem(DRAFT_KEY);setQuotationNo("(auto)");setDate(formatToday());setTo("");setAttn("");setProject("");setServiceTitle("");setInclusionItems([""]);setItems([{srNo:"1",description:"",unit:"",amount:""}]);setValidityMode("30");setCustomValidityDays("");setAttachments([]);};
+  const reset=()=>{localStorage.removeItem(DRAFT_KEY);setQuotationNo("(auto)");setDate(formatToday());setTo("");setAttn("");setProject("");setServiceTitle("");setInclusionItems([""]);setExclusionItems(DEFAULT_EXCLUSIONS);setItems([{srNo:"1",description:"",unit:"",amount:""}]);setValidityMode("30");setCustomValidityDays("");setPaymentTerms(DEFAULT_PAYMENT_TERMS);setAttachments([]);};
 
   const generatePdfBlob=async(data:QuotationData)=>{const[{pdf},{default:QDoc}]=await Promise.all([import("@react-pdf/renderer"),import("./QuotationDocument")]);return await pdf(<QDoc quotationData={data}/>).toBlob();};
 
   const handlePreview=async()=>{
     const err=validate();if(err){setMessage({text:err,type:"error"});return;}
     try{setIsWorking(true);setMessage(null);
-      const res=await apiCall<{quotation:QuotationData}>("/api/quotation",{method:"POST",body:buildPayload()});
-      setPendingData(res.quotation);setQuotationNo(res.quotation.quotationNo);
-      const blob=await generatePdfBlob(res.quotation);setPreviewUrl(URL.createObjectURL(blob));
+      const payload=buildPayload();
+      const tempData:QuotationData={...payload,quotationNo:"PREVIEW"} as QuotationData;
+      setPendingData(null);
+      const blob=await generatePdfBlob(tempData);setPreviewUrl(URL.createObjectURL(blob));
     }catch(e:any){setMessage({text:e.message||"Failed.",type:"error"});}finally{setIsWorking(false);}
   };
 
-  const handleDownload=async()=>{if(!pendingData)return;try{setIsWorking(true);const blob=await generatePdfBlob(pendingData);const url=URL.createObjectURL(blob);Object.assign(document.createElement("a"),{href:url,download:`${pendingData.quotationNo}.pdf`}).click();URL.revokeObjectURL(url);setMessage({text:`${pendingData.quotationNo} downloaded.`,type:"success"});setPreviewUrl(null);reset();}catch(e:any){setMessage({text:e.message,type:"error"});}finally{setIsWorking(false);}};
-  const handleShare=async()=>{if(!pendingData)return;try{setIsWorking(true);const blob=await generatePdfBlob(pendingData);const pdfFile=new File([blob],`${pendingData.quotationNo}.pdf`,{type:"application/pdf"});const text=[`Quotation: ${pendingData.quotationNo}`,`Total: AED ${pendingData.totalWithVat.toFixed(2)}`].join("\n");if(navigator.share){const f=[pdfFile,...attachments];if(navigator.canShare?.({files:f}))await navigator.share({title:pendingData.quotationNo,text,files:f});else await navigator.share({title:pendingData.quotationNo,text});}else await navigator.clipboard.writeText(text);setMessage({text:`${pendingData.quotationNo} shared.`,type:"success"});setPreviewUrl(null);reset();}catch(e:any){setMessage({text:e.message,type:"error"});}finally{setIsWorking(false);}};
+  const handleDownload=async()=>{
+    try{
+      setIsWorking(true);setMessage(null);
+      const res=await apiCall<{quotation:QuotationData}>("/api/quotation",{method:"POST",body:buildPayload()});
+      setQuotationNo(res.quotation.quotationNo);
+      const blob=await generatePdfBlob(res.quotation);
+      const url=URL.createObjectURL(blob);
+      Object.assign(document.createElement("a"),{href:url,download:`${res.quotation.quotationNo}.pdf`}).click();
+      URL.revokeObjectURL(url);
+      setMessage({text:`${res.quotation.quotationNo} saved and downloaded.`,type:"success"});
+      setPreviewUrl(null);reset();
+    }catch(e:any){setMessage({text:e.message||"Download failed.",type:"error"});}
+    finally{setIsWorking(false);}
+  };
 
+  const handleShare=async()=>{
+    try{
+      setIsWorking(true);setMessage(null);
+      const res=await apiCall<{quotation:QuotationData}>("/api/quotation",{method:"POST",body:buildPayload()});
+      setQuotationNo(res.quotation.quotationNo);
+      const blob=await generatePdfBlob(res.quotation);
+      const pdfFile=new File([blob],`${res.quotation.quotationNo}.pdf`,{type:"application/pdf"});
+      const text=[`Quotation: ${res.quotation.quotationNo}`,`Total: AED ${res.quotation.totalWithVat.toFixed(2)}`].join("\n");
+      if(navigator.share){
+        const f=[pdfFile,...attachments];
+        if(navigator.canShare?.({files:f})) await navigator.share({title:res.quotation.quotationNo,text,files:f});
+        else await navigator.share({title:res.quotation.quotationNo,text});
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      setMessage({text:`${res.quotation.quotationNo} saved and shared.`,type:"success"});
+      setPreviewUrl(null);reset();
+    }catch(e:any){setMessage({text:e.message||"Share failed.",type:"error"});}
+    finally{setIsWorking(false);}
+  };
   const paper:CSSProperties={background:"#fff",border:"1px solid #d8dde8",borderRadius:"10px",padding:"24px 26px",marginBottom:"18px",boxShadow:"0 8px 22px rgba(0,0,0,0.06)",fontFamily:"'Times New Roman',Georgia,serif",color:"#111827"};
   const ulH:CSSProperties={fontSize:"16px",fontWeight:700,textDecoration:"underline",marginBottom:"10px"};
   const ulHC:CSSProperties={...ulH,textAlign:"center",fontSize:"18px",marginBottom:"16px"};
@@ -108,7 +147,8 @@ export default function CreateQuotation(){
         <div className="grid gap-2.5">{inclusionItems.map((item,i)=>(<div key={i} className="flex gap-2.5 items-start animate-slide-up" style={{animationDelay:`${i*0.05}s`}}><textarea value={item} onChange={e=>updateInclusion(i,e.target.value)} style={{flex:1,minHeight:"76px",padding:"10px 12px",border:"1px solid #cbd5e1",borderRadius:"6px",fontSize:"15px",fontFamily:"'Times New Roman',Georgia,serif",resize:"vertical",boxSizing:"border-box"}}/><button onClick={()=>removeInclusion(i)} disabled={inclusionItems.length===1} className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold text-sm hover:bg-red-700 disabled:opacity-50 btn-press">Remove</button></div>))}</div>
         <div style={{marginTop:10,marginBottom:14}}><button onClick={addInclusion} className="px-4 py-2 rounded-lg bg-white text-navy border border-navy font-semibold text-sm hover:bg-navy-50 btn-press">Add Inclusion</button></div>
         <div style={ulH}>EXCLUSIONS:</div>
-        <ul style={{margin:"0 0 14px 22px",padding:0}}>{DEFAULT_EXCLUSIONS.map((item,i)=><li key={i} style={{fontSize:"16px",lineHeight:1.35,marginBottom:"6px"}}>{item}</li>)}</ul>
+        <div className="grid gap-2.5">{exclusionItems.map((item,i)=>(<div key={i} className="flex gap-2.5 items-start animate-slide-up" style={{animationDelay:`${i*0.05}s`}}><textarea value={item} onChange={e=>updateExclusion(i,e.target.value)} style={{flex:1,minHeight:"76px",padding:"10px 12px",border:"1px solid #cbd5e1",borderRadius:"6px",fontSize:"15px",fontFamily:"'Times New Roman',Georgia,serif",resize:"vertical",boxSizing:"border-box"}}/><button onClick={()=>removeExclusion(i)} disabled={exclusionItems.length===1} className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold text-sm hover:bg-red-700 disabled:opacity-50 btn-press">Remove</button></div>))}</div>
+        <div style={{marginTop:10,marginBottom:14}}><button onClick={addExclusion} className="px-4 py-2 rounded-lg bg-white text-navy border border-navy font-semibold text-sm hover:bg-navy-50 btn-press">Add Exclusion</button></div>
         <div style={ulHC}>ANNEXURE-2:</div><div style={ulH}>SCHEDULE OF PRICES</div><p style={bodyP}>Our price for the execution of the above-mentioned scope of works is as follows:</p>
         <div style={{border:"1px solid #111827",marginTop:"10px"}}>
           <div style={{display:"flex",background:"#d8e4f2",borderBottom:"1px solid #111827"}}><div style={{padding:"8px 6px",fontSize:"15px",fontWeight:700,textAlign:"center",borderRight:"1px solid #111827",width:"12%"}}>Sr. no.</div><div style={{padding:"8px 6px",fontSize:"15px",fontWeight:700,textAlign:"center",borderRight:"1px solid #111827",width:"59%"}}>Description</div><div style={{padding:"8px 6px",fontSize:"15px",fontWeight:700,textAlign:"center",borderRight:"1px solid #111827",width:"11%"}}>Unit</div><div style={{padding:"8px 6px",fontSize:"15px",fontWeight:700,textAlign:"center",width:"18%"}}>Amount (AED)</div></div>
@@ -125,7 +165,9 @@ export default function CreateQuotation(){
           <div style={{display:"flex",borderBottom:"1px solid #111827"}}><div style={{width:"82%",padding:"6px 8px",textAlign:"center",fontSize:"16px",borderRight:"1px solid #111827"}}>Total Amount with Vat</div><div style={{width:"18%",padding:"6px 8px",textAlign:"right",fontSize:"16px"}}>{fmtMoney(totals.totalWithVat)}</div></div>
           <div style={{display:"flex"}}><div style={{width:"22%",padding:"6px 8px",fontSize:"16px",fontWeight:700,borderRight:"1px solid #111827"}}>In Words (AED):</div><div style={{width:"78%",padding:"6px 8px",fontSize:"16px",fontWeight:700}}>{autoWords}</div></div>
         </div>
-        <div style={{marginTop:22}}><div style={ulH}>PAYMENT TERMS:</div>{DEFAULT_PAYMENT_TERMS.map((t,i)=><div key={i} style={{fontSize:"16px",lineHeight:1.3,marginBottom:2}}>{t}</div>)}</div>
+        <div style={{marginTop:22}}><div style={ulH}>PAYMENT TERMS:</div>
+        <div className="grid gap-2.5">{paymentTerms.map((item,i)=>(<div key={i} className="flex gap-2.5 items-start animate-slide-up" style={{animationDelay:`${i*0.05}s`}}><textarea value={item} onChange={e=>updatePaymentTerm(i,e.target.value)} style={{flex:1,minHeight:"76px",padding:"10px 12px",border:"1px solid #cbd5e1",borderRadius:"6px",fontSize:"15px",fontFamily:"'Times New Roman',Georgia,serif",resize:"vertical",boxSizing:"border-box"}}/><button onClick={()=>removePaymentTerm(i)} disabled={paymentTerms.length===1} className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold text-sm hover:bg-red-700 disabled:opacity-50 btn-press">Remove</button></div>))}</div>
+        <div style={{marginTop:10,marginBottom:14}}><button onClick={addPaymentTerm} className="px-4 py-2 rounded-lg bg-white text-navy border border-navy font-semibold text-sm hover:bg-navy-50 btn-press">Add Payment Term</button></div></div>
         <div style={{marginTop:22}}>
           <div style={ulH}>VALIDITY:</div>
           <div className="flex gap-2.5 items-center mb-2.5">
