@@ -1,44 +1,74 @@
-import { initializeApp, getApps, cert } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import { initializeApp, getApps, cert, type App } from "firebase-admin/app";
+import { getAuth, type Auth } from "firebase-admin/auth";
+import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
-let adminAuth: any = null;
-let adminDb: any = null;
+let app: App | null = null;
+let adminAuthInstance: Auth | null = null;
+let adminDbInstance: Firestore | null = null;
+let initError: string | null = null;
 
-if (getApps().length === 0) {
+function initAdmin() {
+  if (app) return;
+  if (getApps().length > 0) {
+    app = getApps()[0];
+    adminAuthInstance = getAuth(app);
+    adminDbInstance = getFirestore(app);
+    return;
+  }
+
+  const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+  let privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+
+  const missing: string[] = [];
+  if (!projectId) missing.push("FIREBASE_ADMIN_PROJECT_ID");
+  if (!clientEmail) missing.push("FIREBASE_ADMIN_CLIENT_EMAIL");
+  if (!privateKey) missing.push("FIREBASE_ADMIN_PRIVATE_KEY");
+
+  if (missing.length > 0) {
+    initError = `Missing env vars: ${missing.join(", ")}`;
+    console.error("🔥 Firebase Admin init failed:", initError);
+    return;
+  }
+
+  // Handle \n in private key (Windows .env quirk, Vercel, etc.)
+  if (privateKey && privateKey.includes("\\n")) {
+    privateKey = privateKey.replace(/\\n/g, "\n");
+  }
+  // Strip surrounding quotes if present
+  if (privateKey && (privateKey.startsWith('"') || privateKey.startsWith("'"))) {
+    privateKey = privateKey.slice(1, -1).replace(/\\n/g, "\n");
+  }
+
   try {
-    // Get the private key and handle both formats: "key\nkey" and "key\\nkey"
-    let privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY || "";
-    
-    // If the key contains literal \n (backslash-n), replace with actual newlines
-    if (privateKey.includes("\\n")) {
-      privateKey = privateKey.replace(/\\n/g, "\n");
-    }
-    
-    if (!process.env.FIREBASE_ADMIN_PROJECT_ID || !process.env.FIREBASE_ADMIN_CLIENT_EMAIL || !privateKey) {
-      throw new Error("Missing Firebase Admin environment variables: FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, or FIREBASE_ADMIN_PRIVATE_KEY");
-    }
-
-    // Validate private key format
-    if (!privateKey.includes("BEGIN PRIVATE KEY") || !privateKey.includes("END PRIVATE KEY")) {
-      throw new Error("Invalid FIREBASE_ADMIN_PRIVATE_KEY format. Must be a PEM-formatted private key.");
-    }
-
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-        privateKey,
-      }),
+    app = initializeApp({
+      credential: cert({ projectId, clientEmail, privateKey }),
     });
-
-    adminAuth = getAuth();
-    adminDb = getFirestore();
-    console.log("✓ Firebase Admin SDK initialized successfully");
-  } catch (error: any) {
-    console.error("✗ Firebase Admin SDK initialization failed:", error.message);
-    console.error("Check your .env.local file has FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, and FIREBASE_ADMIN_PRIVATE_KEY");
+    adminAuthInstance = getAuth(app);
+    adminDbInstance = getFirestore(app);
+    console.log("✅ Firebase Admin initialized");
+  } catch (err: any) {
+    initError = err.message || "Unknown init error";
+    console.error("🔥 Firebase Admin init failed:", initError);
   }
 }
 
-export { adminAuth, adminDb };
+initAdmin();
+
+export const adminAuth = new Proxy({} as Auth, {
+  get(_t, prop) {
+    if (!adminAuthInstance) {
+      throw new Error(`Firebase Admin Auth not initialized. ${initError || "Check your environment variables."}`);
+    }
+    return (adminAuthInstance as any)[prop];
+  },
+});
+
+export const adminDb = new Proxy({} as Firestore, {
+  get(_t, prop) {
+    if (!adminDbInstance) {
+      throw new Error(`Firebase Admin Firestore not initialized. ${initError || "Check your environment variables."}`);
+    }
+    return (adminDbInstance as any)[prop];
+  },
+});

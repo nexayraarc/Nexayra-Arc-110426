@@ -10,19 +10,18 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const invoiceId = url.searchParams.get("invoiceId");
-    let q: any = adminDb.collection("collections").orderBy("date", "desc");
-    if (invoiceId) q = adminDb.collection("collections").where("invoiceId", "==", invoiceId).orderBy("date", "desc");
-    const snap = await q.get();
-    const collections = snap.docs.map((d: any) => {
+    const snap = await adminDb.collection("collections").get();
+    let collections = snap.docs.map((d) => {
       const data = d.data();
       return { id: d.id, ...data, date: data.date?.toDate?.()?.toISOString() || data.date };
     });
+    if (invoiceId) collections = collections.filter((c: any) => c.invoiceId === invoiceId);
+    collections.sort((a: any, b: any) => String(b.date).localeCompare(String(a.date)));
     return NextResponse.json({ ok: true, collections });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
   }
 }
-
 export async function POST(req: NextRequest) {
   const auth = await verifyAuth(req);
   if ("error" in auth) return auth.error;

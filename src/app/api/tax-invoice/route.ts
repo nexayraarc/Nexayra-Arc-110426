@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     if ("error" in authResult) return authResult.error;
     const body = await req.json();
     const counterRef = adminDb.collection("counters").doc("taxInvoice");
-    const num = await adminDb.runTransaction(async (t: any) => {
+    const num = await adminDb.runTransaction(async (t: FirebaseFirestore.Transaction) => {
       const snap = await t.get(counterRef);
       const current = snap.exists ? (snap.data()?.current || 1000) : 1000;
       const next = current + 1;

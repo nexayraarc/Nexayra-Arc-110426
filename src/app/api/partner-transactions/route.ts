@@ -10,19 +10,18 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const partnerId = url.searchParams.get("partnerId");
-    let q: any = adminDb.collection("partnerTransactions").orderBy("date", "desc");
-    if (partnerId) q = adminDb.collection("partnerTransactions").where("partnerId", "==", partnerId).orderBy("date", "desc");
-    const snap = await q.get();
-    const transactions = snap.docs.map((d: any) => {
+    const snap = await adminDb.collection("partnerTransactions").get();
+    let transactions = snap.docs.map((d) => {
       const data = d.data();
       return { id: d.id, ...data, date: data.date?.toDate?.()?.toISOString() || data.date };
     });
+    if (partnerId) transactions = transactions.filter((t: any) => t.partnerId === partnerId);
+    transactions.sort((a: any, b: any) => String(b.date).localeCompare(String(a.date)));
     return NextResponse.json({ ok: true, transactions });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
   }
 }
-
 export async function POST(req: NextRequest) {
   const auth = await verifyAuth(req);
   if ("error" in auth) return auth.error;
@@ -72,4 +71,4 @@ export async function DELETE(req: NextRequest) {
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
   }
-}
+}   

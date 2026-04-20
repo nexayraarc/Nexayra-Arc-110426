@@ -10,13 +10,13 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const projectId = url.searchParams.get("projectId");
-    let q: any = adminDb.collection("projectExpenses").orderBy("date", "desc");
-    if (projectId) q = adminDb.collection("projectExpenses").where("projectId", "==", projectId).orderBy("date", "desc");
-    const snap = await q.get();
-    const expenses = snap.docs.map((d: any) => {
+    const snap = await adminDb.collection("projectExpenses").get();
+    let expenses = snap.docs.map((d) => {
       const data = d.data();
       return { id: d.id, ...data, date: data.date?.toDate?.()?.toISOString() || data.date };
     });
+    if (projectId) expenses = expenses.filter((e: any) => e.projectId === projectId);
+    expenses.sort((a: any, b: any) => String(b.date).localeCompare(String(a.date)));
     return NextResponse.json({ ok: true, expenses });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
