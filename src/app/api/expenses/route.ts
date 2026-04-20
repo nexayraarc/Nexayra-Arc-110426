@@ -8,11 +8,12 @@ export async function GET(req: NextRequest) {
   const auth = await verifyAuth(req);
   if ("error" in auth) return auth.error;
   try {
-    const snap = await adminDb.collection("expenses").orderBy("date", "desc").get();
-    const expenses = snap.docs.map((d: any) => {
+    const snap = await adminDb.collection("expenses").get();
+    const expenses = snap.docs.map((d) => {
       const data = d.data();
       return { id: d.id, ...data, date: data.date?.toDate?.()?.toISOString() || data.date };
     });
+    expenses.sort((a: any, b: any) => String(b.date).localeCompare(String(a.date)));
     return NextResponse.json({ ok: true, expenses });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
   const forbidden = requireAccountsWrite(auth); if (forbidden) return forbidden;
   try {
     const body = await req.json();
-    const { date, categoryId, description, amount, bankAccountId, vendor } = body;
+    const { date, categoryId, description, amount, bankAccountId, vendor, paidBy, paymentMode, paymentModeCustom, billData, billName, billType } = body;
     if (!date || !amount || !bankAccountId)
       return NextResponse.json({ ok: false, message: "date, amount, bankAccountId required" }, { status: 400 });
     const amt = Number(amount);
@@ -36,6 +37,12 @@ export async function POST(req: NextRequest) {
       amount: amt,
       bankAccountId,
       vendor: vendor || "",
+      paidBy: paidBy || "",
+      paymentMode: paymentMode || "",
+      paymentModeCustom: paymentModeCustom || "",
+      billData: billData || "",
+      billName: billName || "",
+      billType: billType || "",
       createdBy: auth.email || "",
       createdAt: FieldValue.serverTimestamp(),
     });
@@ -62,7 +69,6 @@ export async function PUT(req: NextRequest) {
     if (updates.amount !== undefined) updates.amount = Number(updates.amount);
     if (updates.date) updates.date = Timestamp.fromDate(new Date(updates.date));
 
-    // If amount or bank changed, re-do ledger
     const existingSnap = await adminDb.collection("expenses").doc(id).get();
     const existing = existingSnap.data();
     await adminDb.collection("expenses").doc(id).set({ ...updates, updatedAt: FieldValue.serverTimestamp() }, { merge: true });

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const forbidden = requireAccountsWrite(auth); if (forbidden) return forbidden;
   try {
     const body = await req.json();
-    const { projectId, date, categoryId, description, amount, bankAccountId, vendor } = body;
+    const { projectId, date, categoryId, description, amount, bankAccountId, vendor, paidBy, paymentMode, paymentModeCustom, billData, billName, billType } = body;
     if (!projectId || !date || !amount || !bankAccountId)
       return NextResponse.json({ ok: false, message: "projectId, date, amount, bankAccountId required" }, { status: 400 });
     const amt = Number(amount);
@@ -40,6 +40,12 @@ export async function POST(req: NextRequest) {
       description: description || "",
       amount: amt, bankAccountId,
       vendor: vendor || "",
+      paidBy: paidBy || "",
+      paymentMode: paymentMode || "",
+      paymentModeCustom: paymentModeCustom || "",
+      billData: billData || "",
+      billName: billName || "",
+      billType: billType || "",
       createdBy: auth.email || "",
       createdAt: FieldValue.serverTimestamp(),
     });
