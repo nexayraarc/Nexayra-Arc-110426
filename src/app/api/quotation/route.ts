@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyAuth } from "@/lib/api-auth";
+import { verifyAuth, checkFirebaseInit } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 
 export async function POST(req: NextRequest) {
+  const fbCheck = checkFirebaseInit();
+  if (fbCheck) return fbCheck;
   try {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
@@ -27,6 +29,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const fbCheck = checkFirebaseInit();
+  if (fbCheck) return fbCheck;
   try {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
@@ -43,6 +47,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  const fbCheck = checkFirebaseInit();
+  if (fbCheck) return fbCheck;
   try {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
