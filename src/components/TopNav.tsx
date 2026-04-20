@@ -1,18 +1,26 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "./AuthGuard";
-import { LogOut } from "lucide-react";
+import { LogOut, LayoutDashboard, FileText, FileCheck, Receipt, History } from "lucide-react";
+
+const NAV_ITEMS = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/lpo/history", label: "LPO History", icon: History },
+  { href: "/dashboard/quotation/history", label: "Quotation History", icon: History },
+  { href: "/dashboard/receiver-copy/history", label: "Receipt History", icon: History },
+];
 
 export default function TopNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
 
-  const handleSignOut = async () => {
+  const handleSignOut = async () => { 
     await signOut(auth);
     router.replace("/");
   };
@@ -22,8 +30,10 @@ export default function TopNav() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <img src="/nexayra.png" alt="Nexayra Arc" className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+            <img src="/nexayra.png" alt="Nexayra Arc" className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            <div>
+            </div>
           </Link>
 
           <div className="flex items-center gap-4">
@@ -39,6 +49,23 @@ export default function TopNav() {
           </div>
         </div>
       </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="flex gap-0.5 -mb-px overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+          {NAV_ITEMS.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link key={item.href} href={item.href}
+                className={`flex items-center gap-1.5 px-3 py-3 text-[13px] font-semibold border-b-2 transition-all duration-200 whitespace-nowrap ${
+                  active ? "border-navy text-navy" : "border-transparent text-navy-400 hover:text-navy-600 hover:border-navy-200"
+                }`}>
+                <item.icon size={14} />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </header>
   );
-}   
+}
