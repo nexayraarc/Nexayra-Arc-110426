@@ -62,7 +62,7 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleLogin} className="bg-white rounded-2xl p-8 shadow-xl shadow-navy/5 border border-navy-100">
-          <h2 className ="font-display text-xl font-bold text-navy mb-1">Sign In</h2>
+          <h2 className="font-display text-xl font-bold text-navy mb-1">Sign In</h2>
           <p className="text-navy-400 text-sm mb-6">Access the document portal</p>
 
           {error && (
