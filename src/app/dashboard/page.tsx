@@ -2,20 +2,20 @@
 
 import { auth } from "@/lib/firebase";
 import Link from "next/link";
+import GlobalSearch from "@/components/GlobalSearch";
 import { Calculator, Building2, ClipboardList, Users, ShoppingCart, FolderKanban, ArrowRight } from "lucide-react";
 
 const modules = [
   { href: "/dashboard/accounts", label: "Accounts", desc: "Financial records and transactions", icon: Calculator, gradient: "from-emerald-600 to-emerald-700" },
   { href: "/dashboard/company-overview", label: "Company Overview", desc: "Company information and details", icon: Building2, gradient: "from-navy to-navy-700" },
-  { href: "/dashboard/estimation", label: "Estimation", desc: "Quotations, Receipts & Tax Invoices", icon: ClipboardList, gradient: "from-gold to-gold-500" },
+  { href: "/dashboard/estimation", label: "Estimation", desc: "Quotations and proposals", icon: ClipboardList, gradient: "from-gold to-gold-500" },
   { href: "/dashboard/hr", label: "HR", desc: "Human resources management", icon: Users, gradient: "from-purple-600 to-purple-700" },
   { href: "/dashboard/procurement", label: "Procurement", desc: "Purchase orders and vendor management", icon: ShoppingCart, gradient: "from-blue-600 to-blue-700" },
   { href: "/dashboard/projects", label: "Projects", desc: "Project tracking and management", icon: FolderKanban, gradient: "from-teal-600 to-teal-700" },
 ];
 
 export default function DashboardPage() {
-  const email = auth.currentUser?.email?.split("@")[0] || "there";
-  const userName = email.charAt(0).toUpperCase() + email.slice(1);
+  const userName = auth.currentUser?.email?.split("@")[0] || "there";
 
   return (
     <div>
@@ -30,10 +30,14 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      <div className="mb-8 animate-fade-in-up delay-1">
+        <GlobalSearch/>
+      </div>
+
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {modules.map((mod, i) => (
           <Link key={mod.href} href={mod.href}
-            className={`animate-fade-in-up delay-${Math.min(i + 1, 5)} group flex items-center gap-4 p-5 rounded-2xl bg-white border border-navy-100 shadow-sm hover-lift`}>
+            className={`animate-fade-in-up delay-${Math.min(i + 2, 5)} group flex items-center gap-4 p-5 rounded-2xl bg-white border border-navy-100 shadow-sm hover-lift`}>
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${mod.gradient} flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
               <mod.icon size={22} className="text-white" />
             </div>

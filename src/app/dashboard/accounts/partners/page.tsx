@@ -41,13 +41,15 @@ export default function PartnersPage() {
   useEffect(() => { load(); }, []);
 
   const addPartner = async () => {
-    if (!newName.trim()) return;
+    if (!newName.trim()){ alert("Please add the partner name."); return; }
     await apiCall("/api/partners", { method: "POST", body: { name: newName, email: newEmail, ownershipPct: Number(newPct || 0) } });
     setNewName(""); setNewEmail(""); setNewPct(""); load();
   };
 
   const addTx = async () => {
-    if (!txPartner || !txAmount || !txBank) return;
+    if (!txPartner) { alert("Please select a partner."); return; }
+    if (!txAmount || isNaN(Number(txAmount)) || Number(txAmount) <= 0) { alert("Please add a valid amount."); return; }
+    if (!txBank) { alert("Please select a bank account."); return; }
     await apiCall("/api/partner-transactions", { method: "POST", body: { partnerId: txPartner, type: txType, amount: Number(txAmount), bankAccountId: txBank, date: txDate, note: txNote } });
     setTxAmount(""); setTxNote(""); load();
   };

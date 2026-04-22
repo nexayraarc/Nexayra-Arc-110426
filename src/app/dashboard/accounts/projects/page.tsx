@@ -14,16 +14,21 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
 
   const [code, setCode] = useState(""); const [name, setName] = useState(""); const [client, setClient] = useState("");
+  const [scope, setScope] = useState("");
   const [contractValue, setContractValue] = useState(""); const [startDate, setStartDate] = useState(""); const [endDate, setEndDate] = useState("");
-
   const load = async () => { try { const r = await apiCall<{projects: Project[]}>("/api/accounts-projects"); setProjects(r.projects); } finally { setLoading(false); } };
   useEffect(()=>{load();},[]);
 
   const add = async () => {
-    if (!name.trim()) return;
-    await apiCall("/api/accounts-projects", { method: "POST", body: { code, name, client, contractValue: Number(contractValue||0), startDate, endDate, status: "active" }});
-    setCode(""); setName(""); setClient(""); setContractValue(""); setStartDate(""); setEndDate(""); load();
+    if (!code.trim()) { alert("Please add the project code."); return; }
+    if (!name.trim()) { alert("Please add the project name."); return; }
+    if (!client.trim()) { alert("Please add the client name."); return; }
+    if (!contractValue || isNaN(Number(contractValue)) || Number(contractValue) <= 0) { alert("Please add a valid contract value."); return; }
+    if (!startDate) { alert("Please add the start date."); return; }
+    await apiCall("/api/accounts-projects", { method: "POST", body: { code, name, client, scope, contractValue: Number(contractValue||0), startDate, endDate, status: "active" }});
+    setCode(""); setName(""); setClient(""); setScope(""); setContractValue(""); setStartDate(""); setEndDate(""); load();
   };
+
 
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
@@ -34,13 +39,21 @@ export default function ProjectsPage() {
       {canWrite && (
         <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
           <h2 className="font-display text-lg font-bold text-navy mb-4">New Project</h2>
-          <div className="grid sm:grid-cols-3 lg:grid-cols-6 gap-2">
-            <input placeholder="Code" value={code} onChange={e=>setCode(e.target.value)} className={inp}/>
-            <input placeholder="Project name" value={name} onChange={e=>setName(e.target.value)} className={inp}/>
-            <input placeholder="Client" value={client} onChange={e=>setClient(e.target.value)} className={inp}/>
-            <input type="number" placeholder="Contract value" value={contractValue} onChange={e=>setContractValue(e.target.value)} className={inp}/>
-            <input type="date" value={startDate} onChange={e=>setStartDate(e.target.value)} className={inp}/>
-            <button onClick={add} className="px-4 py-2 bg-navy text-white font-semibold rounded-lg text-sm btn-press flex items-center justify-center gap-1"><Plus size={14}/> Add</button>
+          <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            <input placeholder="Code *" value={code} onChange={e=>setCode(e.target.value)} className={inp}/>
+            <input placeholder="Project name *" value={name} onChange={e=>setName(e.target.value)} className={inp}/>
+            <input placeholder="Client *" value={client} onChange={e=>setClient(e.target.value)} className={inp}/>
+            <select value={scope} onChange={e=>setScope(e.target.value)} className={inp}>
+              <option value="">Scope</option>
+              <option value="HVAC">HVAC</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Plumbing">Plumbing</option>
+              <option value="Mixed">Mixed</option>
+            </select>
+            <input type="number" placeholder="Contract value *" value={contractValue} onChange={e=>setContractValue(e.target.value)} className={inp}/>
+            <input type="date" placeholder="Start date" value={startDate} onChange={e=>setStartDate(e.target.value)} className={inp}/>
+            <input type="date" placeholder="Expected end date" value={endDate} onChange={e=>setEndDate(e.target.value)} className={inp}/>
+            <button onClick={add} className="px-4 py-2 bg-navy text-white font-semibold rounded-lg text-sm btn-press flex items-center justify-center gap-1"><Plus size={14}/> Add Project</button>
           </div>
         </div>
       )}
@@ -51,7 +64,7 @@ export default function ProjectsPage() {
             <div key={p.id} className="bg-white border border-navy-100 rounded-2xl p-5 shadow-sm hover-lift">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-navy-400 text-xs">{p.code}</p>
+                  <p className="text-navy-400 text-xs">{p.code} {(p as any).scope ? `· ${(p as any).scope}` : ""}</p>
                   <h3 className="font-bold text-navy">{p.name}</h3>
                   <p className="text-navy-400 text-sm">{p.client}</p>
                 </div>

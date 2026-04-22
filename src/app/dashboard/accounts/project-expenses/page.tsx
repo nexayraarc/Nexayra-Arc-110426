@@ -78,7 +78,15 @@ export default function ProjectExpensesPage() {
   const clearBill = () => { setBillData(""); setBillName(""); setBillType(""); setUploadError(""); };
 
   const add = async () => {
-    if (!projectId || !amount || !bankAccountId) return;
+    if (!projectId) { alert("Please select a project."); return; }
+    if (!date) { alert("Please select a date."); return; }
+    if (!categoryId) { alert("Please select a category."); return; }
+    if (!description.trim()) { alert("Please add a description."); return; }
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) { alert("Please add a valid amount."); return; }
+    if (!bankAccountId) { alert("Please select a bank account."); return; }
+    if (!paidBy.trim()) { alert("Please add who paid."); return; }
+    if (!paymentMode) { alert("Please select a payment mode."); return; }
+    if (paymentMode === "custom" && !paymentModeCustom.trim()) { alert("Please specify the custom payment mode."); return; }
     await apiCall("/api/project-expenses", { method: "POST", body: {
       projectId, date, categoryId, description, amount: Number(amount), bankAccountId, vendor,
       paidBy, paymentMode, paymentModeCustom, billData, billName, billType,

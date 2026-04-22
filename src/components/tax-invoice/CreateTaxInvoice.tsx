@@ -110,7 +110,7 @@ export default function CreateTaxInvoice(){
 
         <h3 className={sec}>Invoice Items</h3>
         <div className="hidden md:flex gap-2 mb-2 text-navy-400 text-xs font-bold uppercase tracking-wider px-1">
-          <div className="flex-[4]">Description</div><div className="w-16">Qty</div><div className="w-20">Unit</div><div className="w-28">Unit Price</div><div className="w-24">Disc %</div><div className="w-16"/>
+          <div className="flex-[4]">Description</div><div className="w-16">Qty</div><div className="w-20">Unit</div><div className="w-28">Unit Price</div><div className="w-16"/>
         </div>
         {items.map((item,i)=>(
           <div key={i} className="flex flex-wrap md:flex-nowrap gap-2 mb-3 items-center animate-slide-up" style={{animationDelay:`${i*0.05}s`}}>
@@ -118,7 +118,6 @@ export default function CreateTaxInvoice(){
             <input type="number" min="0" placeholder="Qty" value={item.qty} onChange={e=>updateItem(i,"qty",e.target.value)} className={`${inp} w-16`}/>
             <input placeholder="UOM" value={item.uom} onChange={e=>updateItem(i,"uom",e.target.value)} className={`${inp} w-20`}/>
             <input type="number" min="0" step="0.01" placeholder="Price" value={item.unitPrice} onChange={e=>updateItem(i,"unitPrice",e.target.value)} className={`${inp} w-28`}/>
-            <input type="number" min="0" max="100" step="0.01" placeholder="Disc%" value={item.discount} onChange={e=>updateItem(i,"discount",e.target.value)} className={`${inp} w-24`}/>
             <button onClick={()=>setItems(p=>p.length===1?p:p.filter((_,j)=>j!==i))} disabled={items.length===1} className="w-16 py-3 bg-red-50 hover:bg-red-100 text-red-500 font-semibold rounded-xl text-xs disabled:opacity-30 border border-red-200 btn-press">✕</button>
           </div>
         ))}
@@ -138,8 +137,6 @@ export default function CreateTaxInvoice(){
 
         <div className="mt-8 p-5 rounded-xl bg-gradient-to-br from-navy-50 to-white border border-navy-100">
           <div className="flex justify-between text-navy-500 text-sm mb-2"><span>Subtotal:</span><strong className="text-navy">AED {totals.subtotal.toFixed(2)}</strong></div>
-          <div className="flex justify-between text-navy-500 text-sm mb-2"><span>Discount:</span><strong className="text-navy">AED {totals.totalDiscount.toFixed(2)}</strong></div>
-          <div className="flex justify-between text-navy-500 text-sm mb-2"><span>Taxable Amount:</span><strong className="text-navy">AED {totals.taxableAmount.toFixed(2)}</strong></div>
           <div className="flex justify-between text-navy-500 text-sm mb-3"><span>VAT (5%):</span><strong className="text-navy">AED {totals.vatAmount.toFixed(2)}</strong></div>
           <div className="flex justify-between text-navy text-xl font-bold pt-3 border-t border-navy-200"><span>Total:</span><span className="text-gold">AED {totals.total.toFixed(2)}</span></div>
           <p className="mt-2 text-navy-400 text-xs">{amountToWords(totals.total)}</p>

@@ -67,3 +67,25 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const auth = await verifyAuth(req);
+  if ("error" in auth) return auth.error;
+  const forbidden = requireAccountsWrite(auth); if (forbidden) return forbidden;
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+    if (!id) return NextResponse.json({ ok: false, message: "id required" }, { status: 400 });
+
+    // Safety: prevent delete if transactions reference this bank account
+    const txSnap = await adminDb.collection("bankTransactions").where("bankAccountId", "==", id).limit(1).get();
+    if (!txSnap.empty) {
+      return NextResponse.json({ ok: false, message: "Cannot delete: this bank account has transactions. Remove all expenses, collections, and partner transactions linked to it first." }, { status: 400 });
+    }
+    await adminDb.collection("bankAccounts").doc(id).delete();
+    return NextResponse.json({ ok: true });
+  } catch (err: any) {
+    console.error("bank-accounts DELETE error:", err);
+    return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
+  }
+}

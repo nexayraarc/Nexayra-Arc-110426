@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
       code: body.code?.trim() || "",
       name: body.name.trim(),
       client: body.client?.trim() || "",
+      scope: body.scope?.trim() || "",
       contractValue: Number(body.contractValue || 0),
       startDate: body.startDate || "",
       endDate: body.endDate || "",

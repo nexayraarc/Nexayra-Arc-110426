@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtAED, fmtDate } from "@/lib/format";
-import { Plus, Trash2, DollarSign } from "lucide-react";
+import { Plus, Trash2, Banknote } from "lucide-react";
 
 type Invoice = { id: string; invoiceNo: string; clientName: string; total: number; amountPaid: number; outstanding: number; status: string; date: string; dueDate: string; projectId: string };
 type Bank = { id: string; name: string };
@@ -43,13 +43,18 @@ export default function InvoicingPage() {
   useEffect(()=>{load();},[]);
 
   const addInv = async () => {
-    if (!invNo || !total) return;
+    if (!invNo.trim()) { alert("Please add the invoice number."); return; }
+    if (!client.trim()) { alert("Please add the client name."); return; }
+    if (!total || isNaN(Number(total)) || Number(total) <= 0) { alert("Please add a valid total amount."); return; }
+    if (!invDate) { alert("Please add the invoice date."); return; }
     await apiCall("/api/accounts-invoices", { method: "POST", body: { invoiceNo: invNo, clientName: client, total: Number(total), date: invDate, dueDate, projectId }});
     setInvNo(""); setClient(""); setTotal(""); setProjectId(""); load();
   };
 
   const addCol = async (invoiceId: string) => {
-    if (!colAmount || !colBank) return;
+    if (!colAmount || isNaN(Number(colAmount)) || Number(colAmount) <= 0) { alert("Please add a valid amount."); return; }
+    if (!colBank) { alert("Please select a bank account."); return; }
+    if (!colDate) { alert("Please select a date."); return; }
     await apiCall("/api/collections", { method: "POST", body: { invoiceId, amount: Number(colAmount), bankAccountId: colBank, date: colDate, reference: colRef }});
     setColAmount(""); setColRef(""); setShowCollect(null); load();
   };
@@ -141,9 +146,9 @@ export default function InvoicingPage() {
                           </div>
                         </div>
                       ) : (
-                        <button onClick={()=>setShowCollect(inv.id)} className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-lg btn-press"><DollarSign size={14}/> Record Payment</button>
+                        <button onClick={()=>setShowCollect(inv.id)} className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-lg btn-press"><Banknote size={14}/> Record Payment (AED)</button>
                       )}
-                    </div>
+                </div>
                   )}
                 </div>
               );

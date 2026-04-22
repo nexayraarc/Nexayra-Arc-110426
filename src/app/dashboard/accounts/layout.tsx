@@ -11,6 +11,8 @@ const TABS = [
   { href: "/dashboard/accounts/project-expenses", label: "Project Expenses" },
   { href: "/dashboard/accounts/projects", label: "Projects" },
   { href: "/dashboard/accounts/invoicing", label: "Invoicing & Collections" },
+  { href: "/dashboard/accounts/tax-invoice", label: "Tax Invoice" },
+  { href: "/dashboard/accounts/receipts", label: "Receipts" },
   { href: "/dashboard/accounts/cash-flow", label: "Cash Flow" },
   { href: "/dashboard/accounts/profit-loss", label: "Profit / Loss" },
 ];
