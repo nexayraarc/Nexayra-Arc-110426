@@ -6,7 +6,7 @@ import { useRole } from "@/lib/use-role";
 import type { LpoPdfData } from "./LpoDocument";
 import { Download, Pencil, Save, X, CheckCircle, Stamp, History as HistoryIcon } from "lucide-react";
 
-type LpoDoc = LpoPdfData & { _docId: string; revisionOf?: string; revisionNumber?: number };
+type LpoDoc = LpoPdfData & { _docId: string; revisionOf?: string; revisionNumber?: number; createdAt?: string };
 
 export default function LpoHistory() {
   const { canApproveLpo } = useRole();
