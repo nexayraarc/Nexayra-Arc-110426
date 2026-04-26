@@ -5,6 +5,7 @@ import { apiCall } from "@/lib/api-client";
 import type { LpoItem, LpoPdfData } from "./LpoDocument";
 import PreviewModal from "@/components/PreviewModal";
 import { Eye } from "lucide-react";
+import SuggestInput from "@/components/SuggestInput";
 
 type PaymentPreset = "15"|"30"|"60"|"90"|"custom";
 type DeliveryPreset = "Days"|"Weeks"|"Months"|"custom";
@@ -36,6 +37,31 @@ export default function CreateLPO() {
   const [message, setMessage] = useState<{text:string;type:"success"|"error"}|null>(null);
   const [previewUrl, setPreviewUrl] = useState<string|null>(null);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("prefill") === "1") {
+      const raw = sessionStorage.getItem("prefillLpo");
+      if (raw) {
+        try {
+          const p = JSON.parse(raw);
+          setClientName(p.clientName || ""); setClientPhone(p.clientPhone || "");
+          setProject(p.project || ""); setSiteLocation(p.siteLocation || "");
+          setContact(p.contact || ""); setReference(p.reference || "");
+          setVendorName(p.vendorName || ""); setVendorAddress(p.vendorAddress || "");
+          setVendorPhone(p.vendorPhone || ""); setVendorTRN(p.vendorTRN || "");
+          if (Array.isArray(p.items) && p.items.length > 0) setItems(p.items);
+          if (p.paymentTerms) {
+            const m = String(p.paymentTerms).match(/(\d+)/);
+            if (m) setPaymentPreset(m[1] as any);
+          }
+          sessionStorage.removeItem("prefillLpo");
+          setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+          alert("Quotation data pre-filled. Add vendor info and save.");
+        } catch {}
+      }
+    }
+  }, []);
   useEffect(() => { try { const s = localStorage.getItem(DRAFT_KEY); if(!s) return; const d=JSON.parse(s); setClientName(d.clientName??""); setClientPhone(d.clientPhone??""); setProject(d.project??""); setSiteLocation(d.siteLocation??""); setContact(d.contact??""); setReference(d.reference??""); setVendorName(d.vendorName??""); setVendorAddress(d.vendorAddress??""); setVendorPhone(d.vendorPhone??""); setVendorTRN(d.vendorTRN??""); setPaymentPreset(d.paymentPreset??"30"); setCustomPaymentDays(d.customPaymentDays??""); setDeliveryNumber(d.deliveryNumber??""); setDeliveryPreset(d.deliveryPreset??"Days"); setCustomDeliveryTime(d.customDeliveryTime??""); setRequestedBy(d.requestedBy??""); setPreparedBy(d.preparedBy??""); if(Array.isArray(d.items)&&d.items.length>0) setItems(d.items); } catch{} }, []);
   useEffect(() => { localStorage.setItem(DRAFT_KEY, JSON.stringify({clientName,clientPhone,project,siteLocation,contact,reference,vendorName,vendorAddress,vendorPhone,vendorTRN,paymentPreset,customPaymentDays,deliveryNumber,deliveryPreset,customDeliveryTime,requestedBy,preparedBy,items})); });
 
@@ -140,7 +166,7 @@ export default function CreateLPO() {
         <h3 className={sec}>Project Details</h3>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="animate-fade-in-up delay-1"><label className={lbl}>Project Code</label><input placeholder="Project Code" value={project} onChange={e=>setProject(e.target.value)} className={inp}/></div>
-          <div className="animate-fade-in-up delay-2"><label className={lbl}>Project Name</label><input placeholder="Project Name" value={clientName} onChange={e=>setClientName(e.target.value)} className={inp}/></div>
+          <div className="animate-fade-in-up delay-2"><label className={lbl}>Project Name</label><SuggestInput field="clientName" value={clientName} onChange={setClientName} placeholder="Project Name" className={inp}/></div>
           <div className="animate-fade-in-up delay-3"><label className={lbl}>Contact Person</label><input placeholder="Contact Person" value={contact} onChange={e=>setContact(e.target.value)} className={inp}/></div>
           <div className="animate-fade-in-up delay-4"><label className={lbl}>Contact Number</label><input placeholder="Contact Number" value={clientPhone} onChange={e=>setClientPhone(e.target.value)} className={inp}/></div>
           <div className="animate-fade-in-up delay-5"><label className={lbl}>Site Location</label><input placeholder="Site Location" value={siteLocation} onChange={e=>setSiteLocation(e.target.value)} className={inp}/></div>
@@ -149,10 +175,25 @@ export default function CreateLPO() {
 
         <h3 className={sec}>Vendor Details</h3>
         <div className="grid sm:grid-cols-2 gap-4">
-          <div><label className={lbl}>Vendor Name</label><input placeholder="Vendor Name" value={vendorName} onChange={e=>setVendorName(e.target.value)} className={inp}/></div>
+          <div><label className={lbl}>Vendor Name</label><SuggestInput field="vendorName" value={vendorName} onChange={setVendorName} onPick={async (name) => {
+  try {
+    const r = await apiCall<{details: any}>(`/api/suggestions?lookup=vendor&name=${encodeURIComponent(name)}`);
+    if (r.details) { if (r.details.vendorAddress) setVendorAddress(r.details.vendorAddress); if (r.details.vendorPhone) setVendorPhone(r.details.vendorPhone); if (r.details.vendorTRN) setVendorTRN(r.details.vendorTRN); }
+  } catch {}
+}} placeholder="Vendor Name" className={inp}/></div>
           <div><label className={lbl}>Vendor Address</label><input placeholder="Vendor Address" value={vendorAddress} onChange={e=>setVendorAddress(e.target.value)} className={inp}/></div>
-          <div><label className={lbl}>Vendor Phone</label><input placeholder="Vendor Phone" value={vendorPhone} onChange={e=>setVendorPhone(e.target.value)} className={inp}/></div>
-          <div><label className={lbl}>Vendor TRN</label><input placeholder="Vendor TRN" value={vendorTRN} onChange={e=>setVendorTRN(e.target.value)} className={inp}/></div>
+          <div><label className={lbl}>Vendor Phone</label><SuggestInput field="vendorPhone" value={vendorPhone} onChange={setVendorPhone} onPick={async (name) => {
+  try {
+    const r = await apiCall<{details: any}>(`/api/suggestions?lookup=vendor&phone=${encodeURIComponent(name)}`);
+    if (r.details) { if (r.details.vendorAddress) setVendorAddress(r.details.vendorAddress); if (r.details.vendorPhone) setVendorPhone(r.details.vendorPhone); if (r.details.vendorTRN) setVendorTRN(r.details.vendorTRN); }
+  } catch {}
+}} placeholder="Vendor Name" className={inp}/></div>
+          <div><label className={lbl}>Vendor TRN</label><SuggestInput field="vendorTRN" value={vendorTRN} onChange={setVendorTRN} onPick={async (name) => {
+  try {
+    const r = await apiCall<{details: any}>(`/api/suggestions?lookup=vendor&TRN=${encodeURIComponent(name)}`);
+    if (r.details) { if (r.details.vendorAddress) setVendorAddress(r.details.vendorAddress); if (r.details.vendorPhone) setVendorPhone(r.details.vendorPhone); if (r.details.vendorTRN) setVendorTRN(r.details.vendorTRN); }
+  } catch {}
+}} placeholder="Vendor Name" className={inp}/></div>
         </div>
 
         <h3 className={sec}>Payment Terms</h3>

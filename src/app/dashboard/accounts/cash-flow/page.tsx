@@ -62,7 +62,7 @@ export default function CashFlowPage() {
 
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
-  const inp = "w-full px-3 py-2 bg-white border border-navy-200 rounded-lg text-navy text-sm";
+  const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
   const totalCash = banks.reduce((s,b)=>s+b.currentBalance,0);
   const filtered = filterBank ? txs.filter(t => t.bankAccountId === filterBank) : txs;
 
@@ -70,30 +70,30 @@ export default function CashFlowPage() {
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-6 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"/>
-        <p className="text-navy-200 text-sm uppercase tracking-wider font-semibold">Total Cash in Hand</p>
+        <p className="text-navy dark:text-white-200 text-sm uppercase tracking-wider font-semibold">Total Cash in Hand</p>
         <p className="text-4xl font-bold mt-1">{fmtAED(totalCash)}</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {banks.map(b => (
-          <div key={b.id} className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift">
+          <div key={b.id} className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
             {editingId === b.id ? (
               <div className="space-y-2">
                 <input value={editName} onChange={e=>setEditName(e.target.value)} className={inp} placeholder="Name"/>
                 <input type="number" step="0.01" value={editOpening} onChange={e=>setEditOpening(e.target.value)} className={inp} placeholder="Opening balance"/>
                 <div className="flex gap-2">
                   <button onClick={saveEdit} className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold btn-press flex items-center justify-center gap-1"><Check size={14}/> Save</button>
-                  <button onClick={()=>setEditingId(null)} className="px-3 py-2 bg-navy-100 text-navy rounded-lg text-sm font-semibold btn-press"><X size={14}/></button>
+                  <button onClick={()=>setEditingId(null)} className="px-3 py-2 bg-navy-100 text-navy dark:text-white rounded-lg text-sm font-semibold btn-press"><X size={14}/></button>
                 </div>
               </div>
             ) : (
               <>
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-navy-50 flex items-center justify-center"><Wallet size={18} className="text-navy"/></div>
+                    <div className="w-10 h-10 rounded-xl bg-navy-50 flex items-center justify-center"><Wallet size={18} className="text-navy dark:text-white"/></div>
                     <div>
-                      <p className="font-bold text-navy">{b.name}</p>
-                      <p className="text-navy-400 text-xs">Opening: {fmtAED(b.openingBalance)}</p>
+                      <p className="font-bold text-navy dark:text-white">{b.name}</p>
+                      <p className="text-navy dark:text-white text-xs">Opening: {fmtAED(b.openingBalance)}</p>
                     </div>
                   </div>
                   {canWrite && (
@@ -103,7 +103,7 @@ export default function CashFlowPage() {
                     </div>
                   )}
                 </div>
-                <p className="text-2xl font-bold text-navy">{fmtAED(b.currentBalance)}</p>
+                <p className="text-2xl font-bold text-navy dark:text-white">{fmtAED(b.currentBalance)}</p>
               </>
             )}
           </div>
@@ -111,8 +111,8 @@ export default function CashFlowPage() {
       </div>
 
       {canWrite && (
-        <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-display text-lg font-bold text-navy mb-4">Add Bank Account</h2>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+          <h2 className="font-lato text-navy dark:text-white text-lg font-bold mb-4">Add Bank Account</h2>
           <div className="grid sm:grid-cols-3 gap-2">
             <input placeholder="Account name *" value={newName} onChange={e=>setNewName(e.target.value)} className={inp}/>
             <input type="number" step="0.01" placeholder="Opening balance *" value={newOpening} onChange={e=>setNewOpening(e.target.value)} className={inp}/>
@@ -121,26 +121,26 @@ export default function CashFlowPage() {
         </div>
       )}
 
-      <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-lg font-bold text-navy">Recent Movements</h2>
+          <h2 className="font-lato text-navy dark:text-white text-lg font-bold">Recent Movements</h2>
           <select value={filterBank} onChange={e=>setFilterBank(e.target.value)} className={inp + " w-auto"}>
             <option value="">All accounts</option>{banks.map(b=><option key={b.id} value={b.id}>{b.name}</option>)}
           </select>
         </div>
         <div className="space-y-2">
-          {filtered.length === 0 ? <p className="text-center py-8 text-navy-300">No movements.</p> :
+          {filtered.length === 0 ? <p className="text-center py-8 text-navy dark:text-white-300">No movements.</p> :
             filtered.map(t => {
               const bank = banks.find(b=>b.id===t.bankAccountId);
               const Icon = t.amount > 0 ? TrendingUp : TrendingDown;
               const color = t.amount > 0 ? "text-green-600" : "text-red-500";
               return (
-                <div key={t.id} className="flex items-center justify-between p-3 bg-navy-50/30 rounded-lg">
+                <div key={t.id} className="flex items-center justify-between p-3 bg-navy-50/30 dark:bg-navy-700/30 rounded-lg">
                   <div className="flex items-center gap-3">
                     <Icon size={18} className={color}/>
                     <div>
-                      <p className="text-navy text-sm font-semibold">{t.description}</p>
-                      <p className="text-navy-400 text-xs">{fmtDate(t.date)} · {bank?.name} · {t.type}</p>
+                      <p className="text-navy dark:text-white text-sm font-semibold">{t.description}</p>
+                      <p className="text-navy dark:text-white text-xs">{fmtDate(t.date)} · {bank?.name} · {t.type}</p>
                     </div>
                   </div>
                   <span className={`font-bold ${color}`}>{t.amount > 0 ? "+" : ""}{fmtAED(t.amount)}</span>

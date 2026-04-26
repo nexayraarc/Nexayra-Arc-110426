@@ -1,26 +1,28 @@
 import { adminDb } from "./firebase-admin";
 
-export type UserRole = "admin" | "accounts" | "viewer";
+export type UserRole =
+  | "admin"
+  | "accounts"
+  | "procurement"
+  | "procurement-approver"
+  | "estimation"
+  | "hr"
+  | "logistics"
+  | "project-manager"
+  | "engineer"
+  | "viewer";
 
 export async function getUserRole(uid: string): Promise<UserRole> {
-  if (!adminDb) {
-    console.error("Firebase Admin DB not initialized");
-    return "viewer";
-  }
-  try {
-    const doc = await adminDb.collection("users").doc(uid).get();
-    if (!doc.exists) return "viewer";
-    return (doc.data()?.role || "viewer") as UserRole;
-  } catch (error: any) {
-    console.error("Error getting user role:", error.message);
-    return "viewer";
-  }
+  const doc = await adminDb.collection("users").doc(uid).get();
+  if (!doc.exists) return "viewer";
+  return (doc.data()?.role || "viewer") as UserRole;
 }
 
-export function canWriteAccounts(role: UserRole): boolean {
-  return role === "admin" || role === "accounts";
-}
-
-export function canViewAccounts(role: UserRole): boolean {
-  return role === "admin" || role === "accounts" || role === "viewer";
-}
+export function canWriteAccounts(role: UserRole): boolean { return role === "admin" || role === "accounts"; }
+export function canWriteProcurement(role: UserRole): boolean { return role === "admin" || role === "procurement" || role === "procurement-approver"; }
+export function canApproveLpo(role: UserRole): boolean { return role === "admin" || role === "procurement-approver"; }
+export function canWriteEstimation(role: UserRole): boolean { return role === "admin" || role === "estimation"; }
+export function canWriteHR(role: UserRole): boolean { return role === "admin" || role === "hr"; }
+export function canWriteLogistics(role: UserRole): boolean { return role === "admin" || role === "logistics"; }
+export function canWriteProjects(role: UserRole): boolean { return role === "admin" || role === "project-manager"; }
+export function canUpdateProjectProgress(role: UserRole): boolean { return role === "admin" || role === "project-manager" || role === "engineer"; }

@@ -17,9 +17,9 @@ export default function PreviewModal({ pdfUrl, title, onClose, onDownload, onSha
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-backdrop" onClick={onClose}>
       <div className="absolute inset-0 bg-navy/40 backdrop-blur-sm" />
-      <div className="relative w-full max-w-4xl h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col animate-modal overflow-hidden" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-full max-w-4xl h-[85vh] bg-white dark:bg-navy-800 rounded-2xl shadow-2xl flex flex-col animate-modal overflow-hidden" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-navy-100 bg-navy-50/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-navy-100 dark:border-navy-700 bg-navy-50/50">
           <div>
             <h3 className="font-display text-lg font-bold text-navy">Preview: {title}</h3>
             <p className="text-navy-400 text-xs mt-0.5">Review before generating or sharing</p>

@@ -5,6 +5,7 @@ import { apiCall } from "@/lib/api-client";
 import type { TaxInvoiceItem, TaxInvoiceData } from "./TaxInvoiceDocument";
 import PreviewModal from "@/components/PreviewModal";
 import { Eye } from "lucide-react";
+import SuggestInput from "@/components/SuggestInput";
 
 const DRAFT_KEY="createTaxInvoiceV1";
 function formatToday():string{const n=new Date();return`${String(n.getDate()).padStart(2,"0")}-${n.toLocaleString("en-US",{month:"long"})}-${n.getFullYear()}`;}
@@ -99,7 +100,12 @@ export default function CreateTaxInvoice(){
       <div className="bg-white border border-navy-100 rounded-2xl p-6 sm:p-8 shadow-sm hover-lift">
         <h3 className={sec}>Client Details</h3>
         <div className="grid sm:grid-cols-2 gap-4">
-          <div><label className={lbl}>Client Name</label><input value={clientName} onChange={e=>setClientName(e.target.value)} className={inp} placeholder="Client / Company"/></div>
+          <div><label className={lbl}>Client Name</label><SuggestInput field="clientName" value={clientName} onChange={setClientName} onPick={async (name) => {
+  try {
+    const r = await apiCall<{details:any}>(`/api/suggestions?lookup=client&name=${encodeURIComponent(name)}`);
+    if (r.details) { if (r.details.clientAddress) setClientAddress(r.details.clientAddress); if (r.details.clientPhone) setClientPhone(r.details.clientPhone); if (r.details.clientTRN) setClientTRN(r.details.clientTRN); }
+  } catch {}
+}} placeholder="Client / Company" className={inp}/></div>
           <div><label className={lbl}>Client Address</label><input value={clientAddress} onChange={e=>setClientAddress(e.target.value)} className={inp} placeholder="Address"/></div>
           <div><label className={lbl}>Client TRN</label><input value={clientTRN} onChange={e=>setClientTRN(e.target.value)} className={inp} placeholder="Tax Registration Number"/></div>
           <div><label className={lbl}>Client Phone</label><input value={clientPhone} onChange={e=>setClientPhone(e.target.value)} className={inp}/></div>

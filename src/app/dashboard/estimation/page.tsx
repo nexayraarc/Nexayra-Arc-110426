@@ -45,18 +45,18 @@ export default function EstimationDashboard() {
           <div className="flex items-center gap-2 mb-2"><ClipboardList size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total Quotations</p></div>
           <p className="text-2xl font-bold">{kpis.total}</p>
         </div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift">
-          <div className="flex items-center gap-2 mb-2"><FileText size={16} className="text-navy"/><p className="text-navy text-xs uppercase font-bold">This Month</p></div>
-          <p className="text-2xl font-bold text-navy">{kpis.thisMonth}</p>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
+          <div className="flex items-center gap-2 mb-2"><FileText size={16} className="text-navy dark:text-white"/><p className="text-navy dark:text-white text-xs uppercase font-bold">This Month</p></div>
+          <p className="text-2xl font-bold text-navy dark:text-white">{kpis.thisMonth}</p>
         </div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift">
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><TrendingUp size={16} className="text-green-600"/><p className="text-green-600 text-xs uppercase font-bold">Total Quoted Value</p></div>
-          <p className="text-2xl font-bold text-navy">{fmtAED(kpis.totalValue)}</p>
+          <p className="text-2xl font-bold text-navy dark:text-white">{fmtAED(kpis.totalValue)}</p>
         </div>
       </div>
 
-      <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-        <h3 className="font-display text-lg font-bold text-navy mb-4">Quotation Value by Month ({new Date().getFullYear()})</h3>
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+        <h3 className="font-lato text-lg font-bold text-navy dark:text-white mb-4">Quotation Value by Month ({new Date().getFullYear()})</h3>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={monthly}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
@@ -68,20 +68,20 @@ export default function EstimationDashboard() {
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-display text-lg font-bold text-navy">Recent Quotations</h3>
-          <Link href="/dashboard/estimation/quotation/history" className="text-sm text-navy font-semibold hover:underline">View all →</Link>
+          <h3 className="font-lato text-lg font-bold text-navy dark:text-white">Recent Quotations</h3>
+          <Link href="/dashboard/estimation/quotation/history" className="text-sm text-navy dark:text-white font-lato-semibold hover:underline">View all →</Link>
         </div>
-        {quotations.slice(0,5).length === 0 ? <p className="text-navy-300 text-center py-8">No quotations yet.</p> : (
+        {quotations.slice(0,5).length === 0 ? <p className="text-navy dark:text-white-300 text-center py-8">No quotations yet.</p> : (
           <div className="space-y-2">
             {quotations.slice(0,5).map(q => (
-              <div key={q.quotationNo} className="flex items-center justify-between p-3 bg-navy-50/30 rounded-lg">
+              <div key={q.quotationNo} className="flex items-center justify-between p-3 bg-navy-50/30 dark:bg-navy-700/30 rounded-lg">
                 <div>
-                  <p className="font-semibold text-navy">{q.quotationNo}</p>
-                  <p className="text-xs text-navy-400">{fmtDate(q.createdAt)} · {q.to || q.clientName || "-"}</p>
+                  <p className="font-semibold text-navy dark:text-white">{q.quotationNo}</p>
+                  <p className="text-xs text-navy dark:text-white">{fmtDate(q.createdAt)} · {q.to || q.clientName || "-"}</p>
                 </div>
-                <span className="font-bold text-navy">{fmtAED(q.totalWithVat)}</span>
+                <span className="font-bold text-navy dark:text-white">{fmtAED(q.totalWithVat)}</span>
               </div>
             ))}
           </div>

@@ -56,24 +56,24 @@ export default function ProcurementDashboard() {
           <div className="flex items-center gap-2 mb-2"><ShoppingCart size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total LPOs</p></div>
           <p className="text-2xl font-bold">{kpis.total}</p>
         </div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift">
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><CheckCircle size={16} className="text-green-600"/><p className="text-green-600 text-xs uppercase font-bold">Approved</p></div>
-          <p className="text-2xl font-bold text-navy">{kpis.approved}</p>
+          <p className="text-2xl font-bold text-navy dark:text-white">{kpis.approved}</p>
         </div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift">
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><Clock size={16} className="text-amber-600"/><p className="text-amber-600 text-xs uppercase font-bold">Pending</p></div>
-          <p className="text-2xl font-bold text-navy">{kpis.pending}</p>
+          <p className="text-2xl font-bold text-navy dark:text-white">{kpis.pending}</p>
         </div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift">
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><TrendingUp size={16} className="text-gold"/><p className="text-gold text-xs uppercase font-bold">Total Value</p></div>
-          <p className="text-2xl font-bold text-navy">{fmtAED(kpis.totalValue)}</p>
+          <p className="text-2xl font-bold text-navy dark:text-white">{fmtAED(kpis.totalValue)}</p>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h3 className="font-display text-lg font-bold text-navy mb-4">Top Vendors by Value</h3>
-          {byVendor.length === 0 ? <p className="text-navy-300 text-center py-12">No LPOs yet.</p> : (
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+          <h3 className="font-lato text-lg font-bold text-navy dark:text-white mb-4">Top Vendors by Value</h3>
+          {byVendor.length === 0 ? <p className="text-navy dark:text-white-300 text-center py-12">No LPOs yet.</p> : (
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie data={byVendor} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={3} dataKey="value" stroke="none">
@@ -86,8 +86,8 @@ export default function ProcurementDashboard() {
           )}
         </div>
 
-        <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h3 className="font-display text-lg font-bold text-navy mb-4">LPOs by Month ({new Date().getFullYear()})</h3>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+          <h3 className="font-lato text-lg font-bold text-navy dark:text-white mb-4">LPOs by Month ({new Date().getFullYear()})</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={monthly}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
@@ -100,22 +100,22 @@ export default function ProcurementDashboard() {
         </div>
       </div>
 
-      <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-display text-lg font-bold text-navy">Recent LPOs</h3>
-          <Link href="/dashboard/procurement/lpo/history" className="text-sm text-navy font-semibold hover:underline">View all →</Link>
+          <h3 className="font-lato text-lg font-bold text-navy dark:text-white">Recent LPOs</h3>
+          <Link href="/dashboard/procurement/lpo/history" className="text-sm text-navy dark:text-white font-lato-semibold hover:underline">View all →</Link>
         </div>
-        {lpos.slice(0,5).length === 0 ? <p className="text-navy-300 text-center py-8">No LPOs yet.</p> : (
+        {lpos.slice(0,5).length === 0 ? <p className="text-navy dark:text-white-300 text-center py-8">No LPOs yet.</p> : (
           <div className="space-y-2">
             {lpos.slice(0,5).map(l => (
-              <div key={l.nxrNo} className="flex items-center justify-between p-3 bg-navy-50/30 rounded-lg">
+              <div key={l.nxrNo} className="flex items-center justify-between p-3 bg-navy-50/30 dark:bg-navy-700/30 rounded-lg">
                 <div>
-                  <p className="font-semibold text-navy">LPO #{l.nxrNo} · {l.vendorName}</p>
-                  <p className="text-xs text-navy-400">{fmtDate(l.createdAt)} · {l.clientName}</p>
+                  <p className="font-semibold text-navy dark:text-white">LPO #{l.nxrNo} · {l.vendorName}</p>
+                  <p className="text-xs text-navy dark:text-white">{fmtDate(l.createdAt)} · {l.clientName}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`text-xs px-2 py-0.5 rounded-full ${l.approved ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>{l.approved ? "Approved" : "Pending"}</span>
-                  <span className="font-bold text-navy">{fmtAED(l.total)}</span>
+                  <span className="font-bold text-navy dark:text-white">{fmtAED(l.total)}</span>
                 </div>
               </div>
             ))}

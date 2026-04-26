@@ -90,7 +90,7 @@ export default function ProfitLossPage() {
 
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
-  const inp = "px-3 py-2 bg-white border border-navy-200 rounded-lg text-navy text-sm";
+  const inp = "px-3 py-2 bg-white border border-navy-200 rounded-lg text-navy dark:text-white text-sm";
   const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i);
 
   return (
@@ -117,9 +117,9 @@ export default function ProfitLossPage() {
       </div>
 
       {/* Period filter */}
-      <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-display text-lg font-bold text-navy">Profit & Loss Breakdown</h2>
+          <h2 className="font-lato text-navy dark:text-white text-lg font-bold">Profit & Loss Breakdown</h2>
           <div className="flex gap-2">
             <select value={period} onChange={e=>setPeriod(e.target.value as any)} className={inp}>
               <option value="month">Monthly</option>
@@ -134,7 +134,7 @@ export default function ProfitLossPage() {
 
         {/* Revenue vs Expenses chart */}
         <div className="mb-6">
-          <h3 className="text-navy font-semibold text-sm mb-3">Revenue vs Expenses</h3>
+          <h3 className="text-navy dark:text-white font-lato-semibold text-sm mb-3">Revenue vs Expenses</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={periods}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
@@ -151,7 +151,7 @@ export default function ProfitLossPage() {
 
         {/* Profit line */}
         <div className="mb-6">
-          <h3 className="text-navy font-semibold text-sm mb-3">Profit Trend</h3>
+          <h3 className="text-navy dark:text-white font-lato-semibold text-sm mb-3">Profit Trend</h3>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={periods}>
               <defs>
@@ -172,7 +172,7 @@ export default function ProfitLossPage() {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="text-navy-400 text-xs uppercase font-bold tracking-wider border-b border-navy-100">
+            <thead><tr className="text-navy dark:text-white text-xs uppercase font-bold tracking-wider border-b border-navy-100 dark:border-navy-700">
               <th className="text-left py-2">Period</th>
               <th className="text-right">Revenue</th>
               <th className="text-right">Company Exp</th>
@@ -184,7 +184,7 @@ export default function ProfitLossPage() {
             <tbody>
               {periods.map(p => (
                 <tr key={p.label} className="border-b border-navy-50 hover:bg-navy-50/30">
-                  <td className="py-3 font-semibold text-navy">{p.label}</td>
+                  <td className="py-3 font-semibold text-navy dark:text-white">{p.label}</td>
                   <td className="text-right text-green-600 font-semibold">{fmtAED(p.revenue)}</td>
                   <td className="text-right text-red-500">{fmtAED(p.companyExp)}</td>
                   <td className="text-right text-amber-600">{fmtAED(p.projectExp)}</td>
@@ -194,7 +194,7 @@ export default function ProfitLossPage() {
                 </tr>
               ))}
               <tr className="bg-navy-50 font-bold">
-                <td className="py-3 text-navy">Total</td>
+                <td className="py-3 text-navy dark:text-white">Total</td>
                 <td className="text-right text-green-600">{fmtAED(totals.revenue)}</td>
                 <td className="text-right text-red-500">{fmtAED(totals.companyExp)}</td>
                 <td className="text-right text-amber-600">{fmtAED(totals.projectExp)}</td>
@@ -209,8 +209,8 @@ export default function ProfitLossPage() {
 
       {/* Project profitability */}
       {projectProfitability.length > 0 && (
-        <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-display text-lg font-bold text-navy mb-4">Top Projects — Contract Value vs Expenses</h2>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+          <h2 className="font-lato text-navy dark:text-white text-lg font-bold mb-4">Top Projects — Contract Value vs Expenses</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={projectProfitability} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>

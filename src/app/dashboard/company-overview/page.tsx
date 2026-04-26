@@ -4,8 +4,8 @@ export default function CompanyOverviewPage() {
       <div className="w-16 h-16 rounded-2xl bg-navy-50 flex items-center justify-center mb-4">
         <span className="text-3xl">🏢</span>
       </div>
-      <h2 className="font-display text-2xl font-bold text-navy mb-2">Company Overview</h2>
-      <p className="text-navy-400 max-w-md">Company information and organizational details. Coming soon.</p>
+      <h2 className="font-lato text-navy dark:text-white text-2xl font-bold mb-2">Company Overview</h2>
+      <p className="text-navy dark:text-white max-w-md">Company information and organizational details. Coming soon.</p>
     </div>
   );
 }

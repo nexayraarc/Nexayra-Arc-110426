@@ -62,8 +62,8 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleLogin} className="bg-white rounded-2xl p-8 shadow-xl shadow-navy/5 border border-navy-100">
-          <h2 className="font-display text-xl font-bold text-navy mb-1">Sign In</h2>
-          <p className="text-navy-400 text-sm mb-6">Access the document portal</p>
+          <h2 className="font-lato text-navy dark:text-white text-xl font-bold mb-1">Sign In</h2>
+          <p className="text-navy dark:text-white text-sm mb-6">Access the document portal</p>
 
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm animate-scale-in">{error}</div>
@@ -71,14 +71,14 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-navy-600 text-xs font-bold uppercase tracking-wider mb-2">Email</label>
+              <label className="block text-navy dark:text-white-600 text-xs font-bold uppercase tracking-wider mb-2">Email</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                className="w-full px-4 py-3 bg-navy-50/50 border border-navy-200 rounded-xl text-navy placeholder-navy-300 text-sm" placeholder="you@nexayraarc.com" />
+                className="w-full px-4 py-3 bg-navy-50/50 border border-navy-200 rounded-xl text-navy dark:text-white placeholder-navy-300 text-sm" placeholder="you@nexayraarc.com" />
             </div>
             <div>
-              <label className="block text-navy-600 text-xs font-bold uppercase tracking-wider mb-2">Password</label>
+              <label className="block text-navy dark:text-white-600 text-xs font-bold uppercase tracking-wider mb-2">Password</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
-                className="w-full px-4 py-3 bg-navy-50/50 border border-navy-200 rounded-xl text-navy placeholder-navy-300 text-sm" placeholder="••••••••" />
+                className="w-full px-4 py-3 bg-navy-50/50 border border-navy-200 rounded-xl text-navy dark:text-white placeholder-navy-300 text-sm" placeholder="••••••••" />
             </div>
           </div>
 

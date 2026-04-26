@@ -47,21 +47,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const fbCheck = checkFirebaseInit();
-  if (fbCheck) return fbCheck;
   try {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
     const body = await req.json();
-    const { quotationNo, updatedQuotationNo, ...updates } = body;
-    if (!quotationNo) return NextResponse.json({ ok: false, message: "Missing quotationNo" }, { status: 400 });
-    const docId = quotationNo.replace(/[^\w\-]/g, "_");
-    const docRef = adminDb.collection("quotations").doc(docId);
-    const docSnap = await docRef.get();
-    const updateData = updatedQuotationNo ? { ...updates, quotationNo: updatedQuotationNo, updatedAt: FieldValue.serverTimestamp() } : { ...updates, updatedAt: FieldValue.serverTimestamp() };
+    const { quotationNo, _docId, ...updates } = body;
+    if (!quotationNo && !_docId) return NextResponse.json({ ok: false, message: "Missing quotationNo or _docId" }, { status: 400 });
+
+    let docId = _docId || quotationNo.replace(/[^\w\-]/g, "_");
+    const docSnap = await adminDb.collection("quotations").doc(docId).get();
     if (!docSnap.exists) return NextResponse.json({ ok: false, message: `Quotation ${quotationNo} not found.` }, { status: 404 });
-    await docRef.set(updateData, { merge: true });
-    return NextResponse.json({ ok: true });
+
+    const { createRevision } = await import("@/lib/revisions");
+    const newNumber = await createRevision("quotations", docId, "quotationNo", updates, authResult.email || "");
+    return NextResponse.json({ ok: true, newNumber });
   } catch (err: any) {
     console.error("Quotation PUT error:", err);
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

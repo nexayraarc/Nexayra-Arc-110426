@@ -63,14 +63,16 @@ export async function PUT(req: NextRequest) {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
     const body = await req.json();
-    const { invoiceNo, ...updates } = body;
-    if (!invoiceNo) return NextResponse.json({ ok: false, message: "Missing invoiceNo" }, { status: 400 });
-    const docId = invoiceNo.replace(/[^\w\-]/g, "_");
-    const docRef = adminDb.collection("taxInvoices").doc(docId);
-    const docSnap = await docRef.get();
+    const { invoiceNo, _docId, ...updates } = body;
+    if (!invoiceNo && !_docId) return NextResponse.json({ ok: false, message: "Missing invoiceNo or _docId" }, { status: 400 });
+
+    let docId = _docId || invoiceNo.replace(/[^\w\-]/g, "_");
+    const docSnap = await adminDb.collection("taxInvoices").doc(docId).get();
     if (!docSnap.exists) return NextResponse.json({ ok: false, message: `Invoice ${invoiceNo} not found.` }, { status: 404 });
-    await docRef.set({ ...updates, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
-    return NextResponse.json({ ok: true });
+
+    const { createRevision } = await import("@/lib/revisions");
+    const newNumber = await createRevision("taxInvoices", docId, "invoiceNo", updates, authResult.email || "");
+    return NextResponse.json({ ok: true, newNumber });
   } catch (err: any) {
     console.error("TaxInvoice PUT error:", err);
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

@@ -46,23 +46,30 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const fbCheck = checkFirebaseInit();
-  if (fbCheck) return fbCheck;
   try {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
-    const { nxrNo, approvedBy } = await req.json();
-    if (!nxrNo || !approvedBy) return NextResponse.json({ ok: false, message: "Missing nxrNo or approvedBy" }, { status: 400 });
 
-    const docRef = adminDb.collection("lpos").doc(`LPO-${nxrNo}`);
-    const docSnap = await docRef.get();
-    if (docSnap.exists) {
-      await docRef.set({ approved: true, approvedBy, approvedAt: FieldValue.serverTimestamp() }, { merge: true });
+    const { requireLpoApprover } = await import("@/lib/api-auth");
+    const forbidden = requireLpoApprover(authResult); if (forbidden) return forbidden;
+
+    const { nxrNo, approvedBy, _docId } = await req.json();
+    if ((!nxrNo && !_docId) || !approvedBy) return NextResponse.json({ ok: false, message: "Missing nxrNo/_docId or approvedBy" }, { status: 400 });
+
+    let docRef;
+    if (_docId) {
+      docRef = adminDb.collection("lpos").doc(_docId);
     } else {
-      const query = await adminDb.collection("lpos").where("nxrNo", "==", Number(nxrNo)).limit(1).get();
-      if (query.empty) return NextResponse.json({ ok: false, message: `LPO #${nxrNo} not found.` }, { status: 404 });
-      await query.docs[0].ref.set({ approved: true, approvedBy, approvedAt: FieldValue.serverTimestamp() }, { merge: true });
+      docRef = adminDb.collection("lpos").doc(`LPO-${nxrNo}`);
+      const docSnap = await docRef.get();
+      if (!docSnap.exists) {
+        const query = await adminDb.collection("lpos").where("nxrNo", "==", nxrNo).limit(1).get();
+        if (query.empty) return NextResponse.json({ ok: false, message: `LPO ${nxrNo} not found.` }, { status: 404 });
+        docRef = query.docs[0].ref;
+      }
     }
+
+    await docRef.set({ approved: true, approvedBy, approvedAt: FieldValue.serverTimestamp() }, { merge: true });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     console.error("LPO PATCH error:", err);
@@ -71,26 +78,28 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const fbCheck = checkFirebaseInit();
-  if (fbCheck) return fbCheck;
   try {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
     const body = await req.json();
-    const { nxrNo, updatedNxrNo, ...updates } = body;
-    if (!nxrNo) return NextResponse.json({ ok: false, message: "Missing nxrNo" }, { status: 400 });
+    const { nxrNo, _docId, ...updates } = body;
+    if (!nxrNo && !_docId) return NextResponse.json({ ok: false, message: "Missing nxrNo or _docId" }, { status: 400 });
 
-    const docRef = adminDb.collection("lpos").doc(`LPO-${nxrNo}`);
-    const docSnap = await docRef.get();
-    const updateData = updatedNxrNo ? { ...updates, nxrNo: updatedNxrNo, updatedAt: FieldValue.serverTimestamp() } : { ...updates, updatedAt: FieldValue.serverTimestamp() };
-    if (docSnap.exists) {
-      await docRef.set(updateData, { merge: true });
-    } else {
-      const query = await adminDb.collection("lpos").where("nxrNo", "==", Number(nxrNo)).limit(1).get();
-      if (query.empty) return NextResponse.json({ ok: false, message: `LPO #${nxrNo} not found.` }, { status: 404 });
-      await query.docs[0].ref.set(updateData, { merge: true });
+    let docId = _docId;
+    if (!docId) {
+      // Try canonical ID first
+      docId = `LPO-${nxrNo}`;
+      const canonical = await adminDb.collection("lpos").doc(docId).get();
+      if (!canonical.exists) {
+        const query = await adminDb.collection("lpos").where("nxrNo", "==", nxrNo).limit(1).get();
+        if (query.empty) return NextResponse.json({ ok: false, message: `LPO ${nxrNo} not found.` }, { status: 404 });
+        docId = query.docs[0].id;
+      }
     }
-    return NextResponse.json({ ok: true });
+
+    const { createRevision } = await import("@/lib/revisions");
+    const newNumber = await createRevision("lpos", docId, "nxrNo", updates, authResult.email || "");
+    return NextResponse.json({ ok: true, newNumber });
   } catch (err: any) {
     console.error("LPO PUT error:", err);
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

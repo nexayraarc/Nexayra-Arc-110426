@@ -61,32 +61,32 @@ export default function PartnersPage() {
 
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
-  const inp = "w-full px-3 py-2 bg-white border border-navy-200 rounded-lg text-navy text-sm";
+  const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
   const totalPct = partners.reduce((s,p) => s + p.ownershipPct, 0);
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-        <h2 className="font-display text-lg font-bold text-navy mb-4">Partners</h2>
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+        <h2 className="font-latoxt-navy dark:text-white text-lg font-bold mb-4">Partners</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="text-navy-400 text-xs uppercase font-bold tracking-wider border-b border-navy-100">
+            <thead><tr className="text-navy dark:text-white text-xs uppercase font-bold tracking-wider border-b border-navy-100 dark:border-navy-700">
               <th className="text-left py-2">Name</th><th className="text-left">Email</th><th className="text-right">Ownership</th>
               <th className="text-right">Contributed</th><th className="text-right">Withdrawn</th><th className="text-right">Distributed</th><th className="text-right">Net Capital</th>
             </tr></thead>
             <tbody>
               {partners.map(p => (
                 <tr key={p.id} className="border-b border-navy-50">
-                  <td className="py-2 font-semibold text-navy">{p.name}</td>
-                  <td className="text-navy-400">{p.email}</td>
+                  <td className="py-2 font-semibold text-navy dark:text-white">{p.name}</td>
+                  <td className="text-navy dark:text-white">{p.email}</td>
                   <td className="text-right">{p.ownershipPct}%</td>
                   <td className="text-right text-green-600">{fmtAED(p.contributed)}</td>
                   <td className="text-right text-red-500">{fmtAED(p.withdrawn)}</td>
                   <td className="text-right text-amber-600">{fmtAED(p.distributed)}</td>
-                  <td className="text-right font-bold text-navy">{fmtAED(p.netCapital)}</td>
+                  <td className="text-right font-bold text-navy dark:text-white">{fmtAED(p.netCapital)}</td>
                 </tr>
               ))}
-              {partners.length > 0 && <tr><td colSpan={2} className="text-right py-2 text-navy-400 text-xs">Total ownership:</td><td className={`text-right font-bold ${totalPct === 100 ? "text-green-600" : "text-amber-500"}`}>{totalPct}%</td><td colSpan={4}/></tr>}
+              {partners.length > 0 && <tr><td colSpan={2} className="text-right py-2 text-navy dark:text-white text-xs">Total ownership:</td><td className={`text-right font-bold ${totalPct === 100 ? "text-green-600" : "text-amber-500"}`}>{totalPct}%</td><td colSpan={4}/></tr>}
             </tbody>
           </table>
         </div>
@@ -102,8 +102,8 @@ export default function PartnersPage() {
       </div>
 
       {canWrite && (
-        <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-display text-lg font-bold text-navy mb-4">Record Capital Movement</h2>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+          <h2 className="font-latoxt-navy dark:text-white text-lg font-bold mb-4">Record Capital Movement</h2>
           <div className="grid sm:grid-cols-6 gap-2">
             <select value={txPartner} onChange={e=>setTxPartner(e.target.value)} className={inp}>
               <option value="">Partner</option>{partners.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
@@ -122,21 +122,21 @@ export default function PartnersPage() {
         </div>
       )}
 
-      <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-        <h2 className="font-display text-lg font-bold text-navy mb-4">Capital History</h2>
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+        <h2 className="font-latoxt-navy dark:text-white text-lg font-bold mb-4">Capital History</h2>
         <div className="space-y-2">
-          {txs.length === 0 ? <p className="text-navy-400 text-sm">No transactions yet.</p> :
+          {txs.length === 0 ? <p className="text-navy dark:text-white text-sm">No transactions yet.</p> :
             txs.map(t => {
               const p = partners.find(x => x.id === t.partnerId);
               const Icon = t.type === "contribution" ? TrendingUp : TrendingDown;
               const color = t.type === "contribution" ? "text-green-600" : "text-red-500";
               return (
-                <div key={t.id} className="flex items-center justify-between p-3 bg-navy-50/30 rounded-lg">
+                <div key={t.id} className="flex items-center justify-between p-3 bg-navy-50/30 dark:bg-navy-700/30 rounded-lg">
                   <div className="flex items-center gap-3">
                     <Icon size={18} className={color}/>
                     <div>
-                      <p className="text-navy font-semibold text-sm">{p?.name || "—"} · {t.type}</p>
-                      <p className="text-navy-400 text-xs">{fmtDate(t.date)} {t.note && `— ${t.note}`}</p>
+                      <p className="text-navy dark:text-white font-latomibold text-sm">{p?.name || "—"} · {t.type}</p>
+                      <p className="text-navy dark:text-white text-xs">{fmtDate(t.date)} {t.note && `— ${t.note}`}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

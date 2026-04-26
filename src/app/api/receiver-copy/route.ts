@@ -47,21 +47,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const fbCheck = checkFirebaseInit();
-  if (fbCheck) return fbCheck;
   try {
     const authResult = await verifyAuth(req);
     if ("error" in authResult) return authResult.error;
     const body = await req.json();
-    const { documentNo, updatedDocumentNo, ...updates } = body;
-    if (!documentNo) return NextResponse.json({ ok: false, message: "Missing documentNo" }, { status: 400 });
-    const docId = documentNo.replace(/[^\w\-]/g, "_");
-    const docRef = adminDb.collection("receiverCopies").doc(docId);
-    const docSnap = await docRef.get();
-    const updateData = updatedDocumentNo ? { ...updates, documentNo: updatedDocumentNo, updatedAt: FieldValue.serverTimestamp() } : { ...updates, updatedAt: FieldValue.serverTimestamp() };
+    const { documentNo, _docId, ...updates } = body;
+    if (!documentNo && !_docId) return NextResponse.json({ ok: false, message: "Missing documentNo or _docId" }, { status: 400 });
+
+    let docId = _docId || documentNo.replace(/[^\w\-]/g, "_");
+    const docSnap = await adminDb.collection("receiverCopies").doc(docId).get();
     if (!docSnap.exists) return NextResponse.json({ ok: false, message: `Receipt ${documentNo} not found.` }, { status: 404 });
-    await docRef.set(updateData, { merge: true });
-    return NextResponse.json({ ok: true });
+
+    const { createRevision } = await import("@/lib/revisions");
+    const newNumber = await createRevision("receiverCopies", docId, "documentNo", updates, authResult.email || "");
+    return NextResponse.json({ ok: true, newNumber });
   } catch (err: any) {
     console.error("ReceiverCopy PUT error:", err);
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

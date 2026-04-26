@@ -29,4 +29,4 @@ export default function EstimationLayout({ children }: { children: React.ReactNo
       <div className="animate-fade-in-up delay-2">{children}</div>
     </div>
   );
-}
+} 

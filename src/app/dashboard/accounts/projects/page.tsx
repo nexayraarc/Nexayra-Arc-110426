@@ -18,6 +18,25 @@ export default function ProjectsPage() {
   const [contractValue, setContractValue] = useState(""); const [startDate, setStartDate] = useState(""); const [endDate, setEndDate] = useState("");
   const load = async () => { try { const r = await apiCall<{projects: Project[]}>("/api/accounts-projects"); setProjects(r.projects); } finally { setLoading(false); } };
   useEffect(()=>{load();},[]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("prefill") === "1") {
+      const raw = sessionStorage.getItem("prefillProject");
+      if (raw) {
+        try {
+          const p = JSON.parse(raw);
+          setCode(p.code || ""); setName(p.name || ""); setClient(p.client || "");
+          setScope(p.scope || ""); setContractValue(String(p.contractValue || ""));
+          setStartDate(p.startDate || ""); setEndDate(p.endDate || "");
+          sessionStorage.removeItem("prefillProject");
+          // Scroll to form
+          setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+          alert("Quotation data pre-filled. Review and save to create the project.");
+        } catch {}
+      }
+    }
+  }, []);
 
   const add = async () => {
     if (!code.trim()) { alert("Please add the project code."); return; }
@@ -32,13 +51,13 @@ export default function ProjectsPage() {
 
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
-  const inp = "w-full px-3 py-2 bg-white border border-navy-200 rounded-lg text-navy text-sm";
+  const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
 
   return (
     <div className="space-y-6">
       {canWrite && (
-        <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-display text-lg font-bold text-navy mb-4">New Project</h2>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
+          <h2 className="font-latoxt-navy dark:text-white text-lg font-bold mb-4">New Project</h2>
           <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-2">
             <input placeholder="Code *" value={code} onChange={e=>setCode(e.target.value)} className={inp}/>
             <input placeholder="Project name *" value={name} onChange={e=>setName(e.target.value)} className={inp}/>
@@ -59,23 +78,23 @@ export default function ProjectsPage() {
       )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.length === 0 ? <p className="col-span-3 text-center py-16 text-navy-300">No projects.</p> :
+        {projects.length === 0 ? <p className="col-span-3 text-center py-16 text-navy dark:text-white-300">No projects.</p> :
           projects.map(p => (
-            <div key={p.id} className="bg-white border border-navy-100 rounded-2xl p-5 shadow-sm hover-lift">
+            <div key={p.id} className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 shadow-sm hover-lift">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-navy-400 text-xs">{p.code} {(p as any).scope ? `· ${(p as any).scope}` : ""}</p>
-                  <h3 className="font-bold text-navy">{p.name}</h3>
-                  <p className="text-navy-400 text-sm">{p.client}</p>
+                  <p className="text-navy dark:text-white text-xs">{p.code} {(p as any).scope ? `· ${(p as any).scope}` : ""}</p>
+                  <h3 className="font-bold text-navy dark:text-white">{p.name}</h3>
+                  <p className="text-navy dark:text-white text-sm">{p.client}</p>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full ${p.status === "active" ? "bg-green-100 text-green-700" : "bg-navy-100 text-navy-500"}`}>{p.status}</span>
+                <span className={`text-xs px-2 py-1 rounded-full ${p.status === "active" ? "bg-green-100 text-green-700" : "bg-navy-100 text-navy dark:text-white-500"}`}>{p.status}</span>
               </div>
               <div className="space-y-1 text-sm border-t border-navy-50 pt-3">
-                <div className="flex justify-between"><span className="text-navy-400">Contract:</span><span className="font-semibold">{fmtAED(p.contractValue)}</span></div>
-                <div className="flex justify-between"><span className="text-navy-400">Invoiced:</span><span className="font-semibold text-blue-600">{fmtAED(p.totalInvoiced)}</span></div>
-                <div className="flex justify-between"><span className="text-navy-400">Collected:</span><span className="font-semibold text-green-600">{fmtAED(p.totalCollected)}</span></div>
-                <div className="flex justify-between"><span className="text-navy-400">Expenses:</span><span className="font-semibold text-red-500">{fmtAED(p.totalExpenses)}</span></div>
-                <div className="flex justify-between border-t border-navy-50 pt-1 mt-1"><span className="text-navy font-bold">Profit:</span><span className={`font-bold ${p.profit >= 0 ? "text-green-600" : "text-red-500"}`}>{fmtAED(p.profit)}</span></div>
+                <div className="flex justify-between"><span className="text-navy dark:text-white">Contract:</span><span className="font-semibold">{fmtAED(p.contractValue)}</span></div>
+                <div className="flex justify-between"><span className="text-navy dark:text-white">Invoiced:</span><span className="font-semibold text-blue-600">{fmtAED(p.totalInvoiced)}</span></div>
+                <div className="flex justify-between"><span className="text-navy dark:text-white">Collected:</span><span className="font-semibold text-green-600">{fmtAED(p.totalCollected)}</span></div>
+                <div className="flex justify-between"><span className="text-navy dark:text-white">Expenses:</span><span className="font-semibold text-red-500">{fmtAED(p.totalExpenses)}</span></div>
+                <div className="flex justify-between border-t border-navy-50 pt-1 mt-1"><span className="text-navy dark:text-white font-latold">Profit:</span><span className={`font-bold ${p.profit >= 0 ? "text-green-600" : "text-red-500"}`}>{fmtAED(p.profit)}</span></div>
               </div>
             </div>
           ))

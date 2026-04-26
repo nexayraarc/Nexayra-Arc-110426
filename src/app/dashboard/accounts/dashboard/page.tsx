@@ -67,16 +67,16 @@ export default function AccountsDashboard() {
     <div className="space-y-6">
       {/* KPIs */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5"><p className="text-navy-200 text-xs uppercase font-bold tracking-wider">Cash in Hand</p><p className="text-2xl font-bold mt-1">{fmtAED(kpis.totalCash)}</p></div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-green-600 text-xs uppercase font-bold tracking-wider">YTD Revenue</p><p className="text-2xl font-bold text-navy mt-1">{fmtAED(kpis.ytdRevenue)}</p></div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-red-500 text-xs uppercase font-bold tracking-wider">YTD Expenses</p><p className="text-2xl font-bold text-navy mt-1">{fmtAED(kpis.ytdExp)}</p></div>
+        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5"><p className="text-navy dark:text-white-200 text-xs uppercase font-bold tracking-wider">Cash in Hand</p><p className="text-2xl font-bold mt-1">{fmtAED(kpis.totalCash)}</p></div>
+        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-green-600 text-xs uppercase font-bold tracking-wider">YTD Revenue</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdRevenue)}</p></div>
+        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-red-500 text-xs uppercase font-bold tracking-wider">YTD Expenses</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdExp)}</p></div>
         <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-gold text-xs uppercase font-bold tracking-wider">YTD Profit</p><p className={`text-2xl font-bold mt-1 ${kpis.ytdProfit >= 0 ? "text-green-600" : "text-red-500"}`}>{fmtAED(kpis.ytdProfit)}</p></div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h3 className="font-display text-lg font-bold text-navy mb-4">Expenses by Category</h3>
-          {byCategory.length === 0 ? <p className="text-navy-300 text-center py-12">No data</p> : (
+          <h3 className="font-latoxt-lg font-bold text-navy dark:text-white mb-4">Expenses by Category</h3>
+          {byCategory.length === 0 ? <p className="text-navy dark:text-white-300 text-center py-12">No data</p> : (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie data={byCategory} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={3} dataKey="value" stroke="none">
@@ -90,7 +90,7 @@ export default function AccountsDashboard() {
         </div>
 
         <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h3 className="font-display text-lg font-bold text-navy mb-4">Monthly Revenue vs Expenses ({new Date().getFullYear()})</h3>
+          <h3 className="font-latoxt-lg font-bold text-navy dark:text-white mb-4">Monthly Revenue vs Expenses ({new Date().getFullYear()})</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyFlow}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
@@ -106,7 +106,7 @@ export default function AccountsDashboard() {
       </div>
 
       <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-        <h3 className="font-display text-lg font-bold text-navy mb-4">Profit Trend</h3>
+        <h3 className="font-latoxt-lg font-bold text-navy dark:text-white mb-4">Profit Trend</h3>
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={monthlyFlow.map(m => ({ ...m, profit: m.revenue - m.expenses }))}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>

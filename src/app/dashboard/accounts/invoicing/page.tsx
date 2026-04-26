@@ -63,7 +63,7 @@ export default function InvoicingPage() {
 
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
-  const inp = "w-full px-3 py-2 bg-white border border-navy-200 rounded-lg text-navy text-sm";
+  const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
   const totalInvoiced = invoices.reduce((s,i)=>s+i.total,0);
   const totalCollected = invoices.reduce((s,i)=>s+i.amountPaid,0);
   const totalOutstanding = invoices.reduce((s,i)=>s+i.outstanding,0);
@@ -71,15 +71,15 @@ export default function InvoicingPage() {
   return (
     <div className="space-y-6">
       <div className="grid sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-navy-400 text-xs font-bold uppercase tracking-wider">Total Invoiced</p><p className="text-2xl font-bold text-navy mt-1">{fmtAED(totalInvoiced)}</p></div>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift"><p className="text-navy dark:text-white text-xs font-bold uppercase tracking-wider">Total Invoiced</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(totalInvoiced)}</p></div>
         <div className="bg-white border border-green-100 rounded-2xl p-5 hover-lift"><p className="text-green-600 text-xs font-bold uppercase tracking-wider">Collected</p><p className="text-2xl font-bold text-green-600 mt-1">{fmtAED(totalCollected)}</p></div>
         <div className="bg-white border border-amber-100 rounded-2xl p-5 hover-lift"><p className="text-amber-600 text-xs font-bold uppercase tracking-wider">Outstanding</p><p className="text-2xl font-bold text-amber-600 mt-1">{fmtAED(totalOutstanding)}</p></div>
       </div>
 
       {canWrite && (
         <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-display text-lg font-bold text-navy mb-4">Add Invoice Manually</h2>
-          <p className="text-navy-400 text-xs mb-3">Tax invoices from Estimation tab auto-mirror here.</p>
+          <h2 className="font-lato text-navy dark:text-white text-lg font-bold mb-4">Add Invoice Manually</h2>
+          <p className="text-navy dark:text-white text-xs mb-3">Tax invoices from Estimation tab auto-mirror here.</p>
           <div className="grid sm:grid-cols-3 lg:grid-cols-7 gap-2">
             <input placeholder="Invoice No" value={invNo} onChange={e=>setInvNo(e.target.value)} className={inp}/>
             <input placeholder="Client" value={client} onChange={e=>setClient(e.target.value)} className={inp}/>
@@ -95,9 +95,9 @@ export default function InvoicingPage() {
       )}
 
       <div className="bg-white border border-navy-100 rounded-2xl p-6 shadow-sm">
-        <h2 className="font-display text-lg font-bold text-navy mb-4">Invoices</h2>
+        <h2 className="font-lato text-navy dark:text-white text-lg font-bold mb-4">Invoices</h2>
         <div className="space-y-3">
-          {invoices.length === 0 ? <p className="text-navy-400 text-sm text-center py-8">No invoices yet.</p> :
+          {invoices.length === 0 ? <p className="text-navy dark:text-white text-sm text-center py-8">No invoices yet.</p> :
             invoices.map(inv => {
               const invCols = collections.filter(c => c.invoiceId === inv.id);
               const statusColor = inv.status === "paid" ? "bg-green-100 text-green-700" : inv.status === "partial" ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700";
@@ -106,13 +106,13 @@ export default function InvoicingPage() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-navy">{inv.invoiceNo}</span>
+                        <span className="font-bold text-navy dark:text-white">{inv.invoiceNo}</span>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor}`}>{inv.status}</span>
                       </div>
-                      <p className="text-navy-400 text-sm">{inv.clientName} · {fmtDate(inv.date)}</p>
+                      <p className="text-navy dark:text-white text-sm">{inv.clientName} · {fmtDate(inv.date)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-navy">{fmtAED(inv.total)}</p>
+                      <p className="font-bold text-navy dark:text-white">{fmtAED(inv.total)}</p>
                       <p className="text-xs text-green-600">Paid: {fmtAED(inv.amountPaid)}</p>
                       {inv.outstanding > 0 && <p className="text-xs text-amber-600">Due: {fmtAED(inv.outstanding)}</p>}
                     </div>
@@ -120,7 +120,7 @@ export default function InvoicingPage() {
                   {invCols.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-navy-50 space-y-1">
                       {invCols.map(c => (
-                        <div key={c.id} className="flex items-center justify-between text-xs text-navy-400">
+                        <div key={c.id} className="flex items-center justify-between text-xs text-navy dark:text-white">
                           <span>📥 {fmtDate(c.date)} · {c.reference} · {banks.find(b=>b.id===c.bankAccountId)?.name}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-green-600 font-semibold">{fmtAED(c.amount)}</span>
@@ -142,7 +142,7 @@ export default function InvoicingPage() {
                           <input placeholder="Reference" value={colRef} onChange={e=>setColRef(e.target.value)} className={inp}/>
                           <div className="flex gap-1">
                             <button onClick={()=>addCol(inv.id)} className="flex-1 px-3 py-2 bg-green-600 text-white font-semibold rounded-lg text-sm btn-press">Save</button>
-                            <button onClick={()=>setShowCollect(null)} className="px-3 text-navy-400">✕</button>
+                            <button onClick={()=>setShowCollect(null)} className="px-3 text-navy dark:text-white">✕</button>
                           </div>
                         </div>
                       ) : (
