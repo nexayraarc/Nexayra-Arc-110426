@@ -3,6 +3,7 @@ import { verifyAuth, requireAccountsWrite } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { writeLedgerEntry, reverseLedgerBySource } from "@/lib/ledger";
+import { logAudit } from "@/lib/audit";
 
 export async function GET(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -46,6 +47,14 @@ export async function POST(req: NextRequest) {
       description: `Collection for invoice: ${reference || invoiceId}`,
       createdBy: auth.email,
     });
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "create",
+      entityType: "collection",
+      entityId: docRef.id,
+      entityName: `Collection for invoice ${invoiceId}`,
+    });
     return NextResponse.json({ ok: true, id: docRef.id });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
@@ -62,6 +71,14 @@ export async function DELETE(req: NextRequest) {
     if (!id) return NextResponse.json({ ok: false, message: "id required" }, { status: 400 });
     await reverseLedgerBySource("collections", id);
     await adminDb.collection("collections").doc(id).delete();
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "delete",
+      entityType: "collection",
+      entityId: id,
+      entityName: `Collection for invoice ${id}`,
+    });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

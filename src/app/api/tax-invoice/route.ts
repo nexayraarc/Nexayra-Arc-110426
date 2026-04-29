@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAuth } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { logAudit } from "@/lib/audit";
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,6 +20,15 @@ export async function POST(req: NextRequest) {
     const invoiceNo = `INV-NEX-${num}`;
     const data = { ...body, invoiceNo, createdBy: authResult.email || "", createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() };
     await adminDb.collection("taxInvoices").doc(invoiceNo.replace(/[^\w\-]/g, "_")).set(data);
+    await logAudit({
+  userId: authResult.uid,
+  userEmail: authResult.email,
+  action: "create",
+  entityType: "taxInvoice",
+  entityId: invoiceNo,
+  entityName: invoiceNo,
+  details: `Created tax invoice ${invoiceNo}`,
+});
     // Auto-mirror into accounts invoices collection
     try {
       await adminDb.collection("invoices").add({
@@ -72,6 +82,15 @@ export async function PUT(req: NextRequest) {
 
     const { createRevision } = await import("@/lib/revisions");
     const newNumber = await createRevision("taxInvoices", docId, "invoiceNo", updates, authResult.email || "");
+    await logAudit({
+  userId: authResult.uid,
+  userEmail: authResult.email,
+  action: "update",
+  entityType: "taxInvoice",
+  entityId: invoiceNo,
+  entityName: invoiceNo,
+  details: `Updated tax invoice ${invoiceNo}`,
+});
     return NextResponse.json({ ok: true, newNumber });
   } catch (err: any) {
     console.error("TaxInvoice PUT error:", err);

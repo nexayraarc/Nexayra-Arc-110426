@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAuth, requireProjectsWrite } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { logAudit } from "@/lib/audit";
 
 export async function GET(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -90,6 +91,14 @@ export async function POST(req: NextRequest) {
       createdBy: auth.email || "",
       createdAt: FieldValue.serverTimestamp(),
     });
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "create",
+      entityType: "project",
+      entityId: docRef.id,
+      entityName: `Project: ${body.name.trim()}`,
+    });
     return NextResponse.json({ ok: true, id: docRef.id });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
@@ -120,6 +129,14 @@ export async function PUT(req: NextRequest) {
     if (updates.budgetedCost !== undefined) updates.budgetedCost = Number(updates.budgetedCost);
     if (updates.actualProgress !== undefined) updates.actualProgress = Number(updates.actualProgress);
     await adminDb.collection("projects").doc(id).set({ ...updates, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "update",
+      entityType: "project",
+      entityId: id,
+      entityName: `Project: ${updates.name || ""}`,
+    });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

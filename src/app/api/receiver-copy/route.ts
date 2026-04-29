@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAuth, checkFirebaseInit } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { logAudit } from "@/lib/audit";
 
 export async function POST(req: NextRequest) {
   const fbCheck = checkFirebaseInit();
@@ -21,6 +22,14 @@ export async function POST(req: NextRequest) {
     const documentNo = `RC-NEX-${num}`;
     const data = { ...body, documentNo, createdBy: authResult.email || "", createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() };
     await adminDb.collection("receiverCopies").doc(documentNo.replace(/[^\w\-]/g, "_")).set(data);
+    await logAudit({
+      userId: authResult.uid,
+      userEmail: authResult.email,
+      action: "create",
+      entityType: "receiverCopy",
+      entityId: documentNo,
+      entityName: documentNo,
+    });
     return NextResponse.json({ ok: true, receiverCopy: { ...data, createdAt: new Date().toISOString() } });
   } catch (err: any) {
     console.error("ReceiverCopy POST error:", err);
@@ -60,6 +69,15 @@ export async function PUT(req: NextRequest) {
 
     const { createRevision } = await import("@/lib/revisions");
     const newNumber = await createRevision("receiverCopies", docId, "documentNo", updates, authResult.email || "");
+    await logAudit({
+  userId: authResult.uid,
+  userEmail: authResult.email,
+  action: "update",
+  entityType: "receiverCopy",
+  entityId: documentNo,
+  entityName: documentNo,
+  details: `Updated receiver copy ${documentNo}`,
+});
     return NextResponse.json({ ok: true, newNumber });
   } catch (err: any) {
     console.error("ReceiverCopy PUT error:", err);

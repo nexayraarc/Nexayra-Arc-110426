@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAuth, requireAccountsWrite } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { logAudit } from "@/lib/audit";
 
 export async function GET(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -49,6 +50,14 @@ export async function POST(req: NextRequest) {
       ownershipPct: Number(body.ownershipPct || 0),
       createdAt: FieldValue.serverTimestamp(),
     });
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "create",
+      entityType: "partner",
+      entityId: docRef.id,
+      entityName: `Partner: ${body.name.trim()}`,
+    });
     return NextResponse.json({ ok: true, id: docRef.id });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
@@ -65,6 +74,14 @@ export async function PUT(req: NextRequest) {
     if (!id) return NextResponse.json({ ok: false, message: "id required" }, { status: 400 });
     if (updates.ownershipPct !== undefined) updates.ownershipPct = Number(updates.ownershipPct);
     await adminDb.collection("partners").doc(id).set({ ...updates, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "update",
+      entityType: "partner",
+      entityId: id,
+      entityName: `Partner: ${updates.name || ""}`,
+    });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

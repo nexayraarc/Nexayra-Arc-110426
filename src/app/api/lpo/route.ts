@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAuth, checkFirebaseInit } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { logAudit } from "@/lib/audit";
 
 export async function POST(req: NextRequest) {
   const fbCheck = checkFirebaseInit();
@@ -20,6 +21,14 @@ export async function POST(req: NextRequest) {
     });
     const lpoData = { ...body, nxrNo, approved: false, approvedBy: "", approvedAt: null, createdBy: authResult.email || "", createdAt: FieldValue.serverTimestamp() };
     await adminDb.collection("lpos").doc(`LPO-${nxrNo}`).set(lpoData);
+    await logAudit({
+  userId: authResult.uid,
+  userEmail: authResult.email,
+  action: "create",
+  entityType: "lpo",
+  entityId: `LPO-${nxrNo}`,
+  entityName: `LPO-${nxrNo} (${body.vendorName})`,
+});
     return NextResponse.json({ ok: true, lpo: { ...lpoData, createdAt: new Date().toISOString() } });
   } catch (err: any) {
     console.error("LPO POST error:", err);
@@ -70,6 +79,15 @@ export async function PATCH(req: NextRequest) {
     }
 
     await docRef.set({ approved: true, approvedBy, approvedAt: FieldValue.serverTimestamp() }, { merge: true });
+    await logAudit({
+  userId: authResult.uid,
+  userEmail: authResult.email,
+  action: "approve",
+  entityType: "lpo",
+  entityId: `LPO-${nxrNo}`,
+  entityName: `LPO-${nxrNo}`,
+  details: `Approved by ${approvedBy}`,
+});
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     console.error("LPO PATCH error:", err);

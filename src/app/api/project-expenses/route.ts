@@ -3,6 +3,7 @@ import { verifyAuth, requireAccountsWrite } from "@/lib/api-auth";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { writeLedgerEntry, reverseLedgerBySource } from "@/lib/ledger";
+import { logAudit } from "@/lib/audit";
 
 export async function GET(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -56,6 +57,14 @@ export async function POST(req: NextRequest) {
       description: `Project expense: ${description || ""}`,
       createdBy: auth.email,
     });
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "create",
+      entityType: "project-expense",
+      entityId: docRef.id,
+      entityName: `Project expense: ${description || ""}`, 
+    });
     return NextResponse.json({ ok: true, id: docRef.id });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
@@ -65,15 +74,45 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const auth = await verifyAuth(req);
   if ("error" in auth) return auth.error;
-  const forbidden = requireAccountsWrite(auth); if (forbidden) return forbidden;
+
+  const forbidden = requireAccountsWrite(auth);
+  if (forbidden) return forbidden;
+
   try {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
-    if (!id) return NextResponse.json({ ok: false, message: "id required" }, { status: 400 });
+
+    if (!id) {
+      return NextResponse.json(
+        { ok: false, message: "id required" },
+        { status: 400 }
+      );
+    }
+
+    const docRef = adminDb.collection("projectExpenses").doc(id);
+
+    // Get expense details before deleting, for audit log
+    const expenseSnap = await docRef.get();
+    const projectExpense = expenseSnap.exists ? expenseSnap.data() : null;
+
     await reverseLedgerBySource("projectExpenses", id);
-    await adminDb.collection("projectExpenses").doc(id).delete();
+
+    await docRef.delete();
+
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "delete",
+      entityType: "project-expense",
+      entityId: id,
+      entityName: `Project expense: ${projectExpense?.description || id}`,
+    });
+
     return NextResponse.json({ ok: true });
   } catch (err: any) {
-    return NextResponse.json({ ok: false, message: err.message }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, message: err.message },
+      { status: 500 }
+    );
   }
 }
