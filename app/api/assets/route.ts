@@ -34,11 +34,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, message: "Forbidden." }, { status: 403 });
     }
 
-    const { name, category, serialNumber, purchaseDate, purchaseValue, currentValue, condition, currentLocation, currentProjectId, assignedTo, notes } = await req.json();
-    if (!name || !category) return NextResponse.json({ ok: false, message: "Name and category required." }, { status: 400 });
+    const body = await req.json();
+    const { name, category, serialNumber, purchaseDate, purchaseValue, currentValue, condition, currentLocation, currentProjectId, assignedTo, notes } = body;
+
+    if (!name || !String(name).trim()) {
+      return NextResponse.json({ ok: false, message: "Name is required." }, { status: 400 });
+    }
+    if (!category || !String(category).trim()) {
+      return NextResponse.json({ ok: false, message: "Category is required." }, { status: 400 });
+    }
+
+    const cleanName = String(name).trim();
+    const cleanCategory = String(category).trim();
 
     const ref = await adminDb.collection("assets").add({
-      name, category,
+      name: cleanName,
+      category: cleanCategory,
       serialNumber: serialNumber || null,
       purchaseDate: purchaseDate || null,
       purchaseValue: purchaseValue !== undefined ? Number(purchaseValue) : 0,
@@ -48,12 +59,20 @@ export async function POST(req: NextRequest) {
       currentProjectId: currentProjectId || null,
       assignedTo: assignedTo || null,
       notes: notes || null,
-      createdBy: auth.uid, createdByEmail: auth.email,
+      createdBy: auth.uid,
+      createdByEmail: auth.email,
       createdAt: FieldValue.serverTimestamp(),
       lastScannedAt: FieldValue.serverTimestamp(),
     });
 
-    await logAudit({ userId: auth.uid, userEmail: auth.email, action: "create", entityType: "asset", entityId: ref.id, entityName: name });
+    await logAudit({
+      userId: auth.uid,
+      userEmail: auth.email,
+      action: "create",
+      entityType: "asset",
+      entityId: ref.id,
+      entityName: cleanName,
+    });
     return NextResponse.json({ ok: true, id: ref.id });
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: err.message }, { status: 500 });

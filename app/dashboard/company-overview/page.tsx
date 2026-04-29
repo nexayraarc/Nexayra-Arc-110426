@@ -32,8 +32,28 @@ type Vehicle = {
   mulkiyaExpiry?: string | null; registrationExpiry?: string | null; insuranceExpiry?: string | null;
   currentPossession?: any;
 };
-type Invoice = { id: string; documentNo?: string; date: string; amount: number; projectId?: string };
-type Collection = { id: string; date: string; amount: number; invoiceId?: string };
+type Invoice = {
+  id: string;
+  documentNo?: string;
+  date?: string;
+  invoiceDate?: string;
+  createdAt?: string;
+  amount?: number;
+  total?: number;
+  grandTotal?: number;
+  totalAmount?: number;
+  amountWithVat?: number;
+  projectId?: string;
+};
+type Collection = {
+  id: string;
+  date: string;
+  amount: number;
+  invoiceId?: string;
+  invoiceNo?: string;
+  invoiceDocumentNo?: string;
+  taxInvoiceId?: string;
+};
 type Partner = { id: string; name: string; sharePercent?: number };
 type PartnerTx = { id: string; partnerId: string; type: "contribution" | "draw"; amount: number; date: string };
 type AuditLog = {
@@ -204,16 +224,44 @@ export default function CompanyOverviewPage() {
   const aging = useMemo(() => {
     const today = Date.now();
     const buckets: Record<string, number> = { "0-30": 0, "31-60": 0, "61-90": 0, "90+": 0 };
-    invoices.forEach((inv) => {
-      const received = collections.filter((c) => c.invoiceId === inv.id).reduce((s, c) => s + c.amount, 0);
-      const outstanding = inv.amount - received;
+
+    invoices.forEach((inv: any) => {
+      // Try multiple possible field names for the invoice amount
+      const invoiceAmount =
+        Number(inv.amount) ||
+        Number(inv.total) ||
+        Number(inv.grandTotal) ||
+        Number(inv.totalAmount) ||
+        Number(inv.amountWithVat) ||
+        0;
+
+      if (invoiceAmount <= 0) return;
+
+      // Try multiple possible field names linking collections back to invoices
+      const received = collections
+        .filter((c: any) => {
+          return (
+            c.invoiceId === inv.id ||
+            c.invoiceNo === inv.documentNo ||
+            c.invoiceDocumentNo === inv.documentNo ||
+            c.taxInvoiceId === inv.id
+          );
+        })
+        .reduce((s, c: any) => s + (Number(c.amount) || 0), 0);
+
+      const outstanding = invoiceAmount - received;
       if (outstanding <= 0) return;
-      const days = Math.floor((today - new Date(inv.date).getTime()) / 86400000);
+
+      const invoiceDate = inv.date || inv.invoiceDate || inv.createdAt;
+      if (!invoiceDate) return;
+
+      const days = Math.floor((today - new Date(invoiceDate).getTime()) / 86400000);
       if (days <= 30) buckets["0-30"] += outstanding;
       else if (days <= 60) buckets["31-60"] += outstanding;
       else if (days <= 90) buckets["61-90"] += outstanding;
       else buckets["90+"] += outstanding;
     });
+
     return buckets;
   }, [invoices, collections]);
   const totalOutstanding = Object.values(aging).reduce((s, v) => s + v, 0);

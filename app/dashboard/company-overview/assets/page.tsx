@@ -235,15 +235,21 @@ function AssetModal({ asset, projects, onClose, onSaved }: { asset: Asset | null
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    if (!form.name.trim()) return setError("Name is required.");
-    setSaving(true); setError("");
-    try {
-      const payload = { ...form, currentProjectId: form.currentProjectId || null };
-      if (asset) await apiCall("/api/assets", { method: "PATCH", body: JSON.stringify({ id: asset.id, ...payload }) });
-      else await apiCall("/api/assets", { method: "POST", body: JSON.stringify(payload) });
-      onSaved();
-    } catch (err: any) { setError(err.message); } finally { setSaving(false); }
-  };
+  if (!form.name.trim()) return setError("Name is required.");
+  if (!form.category || !form.category.trim()) return setError("Category is required.");
+  setSaving(true);
+  setError("");
+  try {
+    const payload = { ...form, currentProjectId: form.currentProjectId || null };
+    if (asset) await apiCall("/api/assets", { method: "PATCH", body: { id: asset.id, ...payload } });
+    else await apiCall("/api/assets", { method: "POST", body: payload });
+    onSaved();
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setSaving(false);
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
