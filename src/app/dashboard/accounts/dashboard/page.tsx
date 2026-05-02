@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from "recharts";import WelcomeBanner from "@/components/WelcomeBanner";
+import ModuleSearchBar from "@/components/ModuleSearchBar";
+import { useChartTheme } from "@/lib/chart-theme";
+
 
 type Bank = { id: string; currentBalance: number };
 type Expense = { id: string; date: string; amount: number; categoryId: string };
@@ -12,6 +15,7 @@ type Col = { id: string; date: string; amount: number };
 const COLORS = ["#1c2143", "#c9a84c", "#0f766e", "#4150aa", "#b91c1c", "#6b56b8"];
 
 export default function AccountsDashboard() {
+   const t = useChartTheme();
   const [banks, setBanks] = useState<Bank[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [projectExp, setProjectExp] = useState<Expense[]>([]);
@@ -63,8 +67,12 @@ export default function AccountsDashboard() {
 
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
+  
+
   return (
     <div className="space-y-6">
+      <WelcomeBanner tagline="Complete visibility into your financial health and cash flow." />
+      <ModuleSearchBar module="accounts" placeholder="Search expenses, invoices, partners, bank accounts…" />
       {/* KPIs */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5"><p className="text-navy dark:text-white-200 text-xs uppercase font-bold tracking-wider">Cash in Hand</p><p className="text-2xl font-bold mt-1">{fmtAED(kpis.totalCash)}</p></div>

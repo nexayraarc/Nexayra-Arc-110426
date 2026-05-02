@@ -6,10 +6,15 @@ import { fmtAED, fmtDate } from "@/lib/format";
 import { ClipboardList, FileText, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import Link from "next/link";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import ModuleSearchBar from "@/components/ModuleSearchBar";
+import { useChartTheme } from "@/lib/chart-theme";
+
 
 type Quotation = { quotationNo: string; clientName?: string; to?: string; totalWithVat: number; createdAt: string };
 
 export default function EstimationDashboard() {
+   const t = useChartTheme();
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +44,10 @@ export default function EstimationDashboard() {
   if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
 
   return (
+  
     <div className="space-y-6">
+      <WelcomeBanner tagline="Build accurate proposals, track margins, and win more tenders." />
+      <ModuleSearchBar module="estimation" placeholder="Search quotations…" />
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="bg-gradient-to-br from-gold to-amber-600 text-white rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><ClipboardList size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total Quotations</p></div>

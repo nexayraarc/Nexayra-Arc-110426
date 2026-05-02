@@ -12,6 +12,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   AreaChart, Area,
 } from "recharts";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import { useChartTheme } from "@/lib/chart-theme";
+
 
 type Project = {
   id: string;
@@ -41,6 +44,7 @@ const STATUS_COLORS: Record<string, string> = {
 const TYPE_COLORS = ["#1c2143", "#c9a84c", "#0f766e", "#4150aa", "#6b56b8"];
 
 export default function ProjectsPage() {
+   const t = useChartTheme();
   const router = useRouter();
   const { role, loading: roleLoading } = useRole();
 
@@ -186,6 +190,36 @@ export default function ProjectsPage() {
         )}
       </div>
 
+      <WelcomeBanner tagline="Track milestones, allocate resources, and deliver on time." compact />
+
+      {/* Search / filter */}
+      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 shadow-sm mb-4 animate-fade-in-up delay-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[240px]">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by project name, code, or client…"
+              className="w-full pl-9 pr-4 py-2.5 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white placeholder-navy-400 focus:outline-none focus:border-gold transition-all"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2.5 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white focus:outline-none focus:border-gold transition-all">
+            <option value="All">All Status</option>
+            <option value="Planning">Planning</option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Completed">Completed</option>
+            <option value="On Hold">On Hold</option>
+          </select>
+          <span className="text-xs text-navy-400 font-semibold">
+            {filtered.length} of {projects.length} projects
+          </span>
+        </div>
+      </div>
+
       {/* KPI strip */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
         {[
@@ -240,9 +274,9 @@ export default function ProjectsPage() {
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={topProjects}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: t.axisText }} />
+                <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
                   contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
                   formatter={(v: number) => fmtAED(v)}
@@ -299,9 +333,9 @@ export default function ProjectsPage() {
                   <stop offset="100%" stopColor="#c9a84c" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }} />
+              <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <Tooltip
                 contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
                 formatter={(v: number) => fmtAED(v)}
@@ -314,33 +348,7 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      {/* Search / filter */}
-      <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 shadow-sm mb-4 animate-fade-in-up delay-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[240px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by project name, code, or client…"
-              className="w-full pl-9 pr-4 py-2.5 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white placeholder-navy-400 focus:outline-none focus:border-gold transition-all"
-            />
-          </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2.5 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white focus:outline-none focus:border-gold transition-all">
-            <option value="All">All Status</option>
-            <option value="Planning">Planning</option>
-            <option value="Ongoing">Ongoing</option>
-            <option value="Completed">Completed</option>
-            <option value="On Hold">On Hold</option>
-          </select>
-          <span className="text-xs text-navy-400 font-semibold">
-            {filtered.length} of {projects.length} projects
-          </span>
-        </div>
-      </div>
+      
 
       {/* Project list */}
       {filtered.length === 0 ? (

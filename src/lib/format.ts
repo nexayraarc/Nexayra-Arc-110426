@@ -21,3 +21,15 @@ export function quarterOf(iso: string): string {
 export function yearOf(iso: string): string {
   return String(new Date(iso).getFullYear());
 }
+
+export function capitalize(name?: string | null): string {
+  if (!name) return "there";
+  const cleaned = String(name).trim();
+  if (!cleaned) return "there";
+  // Handle dotted/dashed/underscored prefixes like "shaya.k", "john_doe", "ali-hassan"
+  return cleaned
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}

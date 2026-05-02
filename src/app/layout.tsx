@@ -1,32 +1,32 @@
-import "./globals.css";
 import type { Metadata } from "next";
+import { Lato, Poppins } from "next/font/google";
+import "./globals.css";
+
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["300", "400", "700", "900"],
+  variable: "--font-lato",
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Nexayra Arc — Document Portal",
-  description: "Document portal for Nexayra Arc General Contracting LLC",
+  title: "Nexayra Arc",
+  description: "Internal operations platform for Nexayra Arc General Contracting L.L.C.",
 };
-
-const themeScript = `
-(function() {
-  try {
-    var saved = localStorage.getItem('nexayra-theme');
-    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var dark = saved === 'dark' || (!saved && prefersDark);
-    if (dark) document.documentElement.classList.add('dark');
-  } catch (e) {}
-})();
-`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet" />
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body>{children}</body>
+    <html lang="en" className={`${lato.variable} ${poppins.variable}`}>
+      <body className="font-body antialiased bg-bg text-fg transition-colors">
+        {children}
+      </body>
     </html>
   );
 }

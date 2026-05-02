@@ -6,11 +6,16 @@ import { fmtAED, fmtDate } from "@/lib/format";
 import { ShoppingCart, CheckCircle, Clock, TrendingUp } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import Link from "next/link";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import ModuleSearchBar from "@/components/ModuleSearchBar";
+import { useChartTheme } from "@/lib/chart-theme";
+
 
 type Lpo = { nxrNo: number; clientName: string; vendorName: string; total: number; approved: boolean; createdAt: string };
 const COLORS = ["#1c2143", "#c9a84c", "#0f766e", "#b91c1c"];
 
 export default function ProcurementDashboard() {
+   const t = useChartTheme();
   const [lpos, setLpos] = useState<Lpo[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +56,8 @@ export default function ProcurementDashboard() {
 
   return (
     <div className="space-y-6">
+      <WelcomeBanner tagline="Streamline purchasing, manage vendors, and control project costs." />
+      <ModuleSearchBar module="procurement" placeholder="Search LPOs, vendors…" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><ShoppingCart size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total LPOs</p></div>

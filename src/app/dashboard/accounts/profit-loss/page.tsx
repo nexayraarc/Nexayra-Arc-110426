@@ -5,6 +5,8 @@ import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area } from "recharts";
 import { TrendingUp, TrendingDown, Target, Percent } from "lucide-react";
+import { useChartTheme } from "@/lib/chart-theme";
+
 
 type Expense = { id: string; date: string; amount: number };
 type PE = { id: string; date: string; amount: number; projectId: string };
@@ -12,6 +14,7 @@ type Col = { id: string; date: string; amount: number };
 type Project = { id: string; name: string; contractValue: number };
 
 export default function ProfitLossPage() {
+   const t = useChartTheme();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [projectExp, setProjectExp] = useState<PE[]>([]);
   const [collections, setCollections] = useState<Col[]>([]);

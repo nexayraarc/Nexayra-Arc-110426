@@ -6,10 +6,14 @@ import { fmtAED, fmtDate } from "@/lib/format";
 import { Truck, Key, Calendar, Building2 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import Link from "next/link";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import ModuleSearchBar from "@/components/ModuleSearchBar";
+import { useChartTheme } from "@/lib/chart-theme";
 
 type Vehicle = { id: string; plateNumber: string; make: string; model: string; year: string; ownership: string; monthlyRentalCost: number; rentalCompany: string; registrationExpiry: string; insuranceExpiry: string; currentPossession: any };
 
 export default function LogisticsDashboard() {
+   const t = useChartTheme();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,6 +49,8 @@ export default function LogisticsDashboard() {
 
   return (
     <div className="space-y-6">
+      <WelcomeBanner tagline="Optimize fleet movements and ensure timely site deliveries." />
+      <ModuleSearchBar module="logistics" placeholder="Search vehicles…" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><Truck size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total Vehicles</p></div>

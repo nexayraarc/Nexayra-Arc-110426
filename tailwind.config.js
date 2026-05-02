@@ -1,67 +1,70 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: "class",
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
-        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        // Lato is the default body font
+        body: ["var(--font-lato)", "system-ui", "sans-serif"],
+        sans: ["var(--font-lato)", "system-ui", "sans-serif"],
+        // Poppins for display / headings (alias `font-display`, `font-heading`, `font-poppins`)
+        display: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        heading: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        poppins: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        lato: ["var(--font-lato)", "system-ui", "sans-serif"],
       },
       colors: {
+        // Brand navy — full scale, defined as CSS variables so we can theme dark mode
         navy: {
-          DEFAULT: '#1c2143',
-          50: '#f4f5fb',
-          100: '#e8eaf5',
-          200: '#c8d1e6',
-          300: '#94a3b8',
-          400: '#64748b',
-          500: '#475569',
-          600: '#334155',
-          700: '#252b5a',
-          800: '#1c2143',
-          900: '#11142a',
+          DEFAULT: "rgb(var(--c-navy) / <alpha-value>)",
+          50: "rgb(var(--c-navy-50) / <alpha-value>)",
+          100: "rgb(var(--c-navy-100) / <alpha-value>)",
+          200: "rgb(var(--c-navy-200) / <alpha-value>)",
+          300: "rgb(var(--c-navy-300) / <alpha-value>)",
+          400: "rgb(var(--c-navy-400) / <alpha-value>)",
+          500: "rgb(var(--c-navy-500) / <alpha-value>)",
+          600: "rgb(var(--c-navy-600) / <alpha-value>)",
+          700: "rgb(var(--c-navy-700) / <alpha-value>)",
+          800: "rgb(var(--c-navy-800) / <alpha-value>)",
+          900: "rgb(var(--c-navy-900) / <alpha-value>)",
         },
+        // Brand gold — also CSS-variable driven for dark mode tweaking
         gold: {
-          DEFAULT: '#c9a84c',
-          50: '#fdf9ee',
-          100: '#faf0d2',
-          200: '#f3dfa0',
-          300: '#e8c66a',
-          400: '#dab347',
-          500: '#c9a84c',
-          600: '#a8862e',
-          700: '#876928',
+          DEFAULT: "rgb(var(--c-gold) / <alpha-value>)",
+          50: "rgb(var(--c-gold-50) / <alpha-value>)",
+          100: "rgb(var(--c-gold-100) / <alpha-value>)",
+          200: "rgb(var(--c-gold-200) / <alpha-value>)",
+          300: "rgb(var(--c-gold-300) / <alpha-value>)",
+          400: "rgb(var(--c-gold-400) / <alpha-value>)",
+          500: "rgb(var(--c-gold-500) / <alpha-value>)",
+          600: "rgb(var(--c-gold-600) / <alpha-value>)",
+          700: "rgb(var(--c-gold-700) / <alpha-value>)",
         },
+        // Semantic tokens — use these instead of hardcoded white/navy where possible
+        bg:        "rgb(var(--c-bg) / <alpha-value>)",
+        fg:        "rgb(var(--c-fg) / <alpha-value>)",
+        surface:   "rgb(var(--c-surface) / <alpha-value>)",
+        "surface-2": "rgb(var(--c-surface-2) / <alpha-value>)",
+        border:    "rgb(var(--c-border) / <alpha-value>)",
+        muted:     "rgb(var(--c-muted) / <alpha-value>)",
       },
       animation: {
-        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
-        'scale-in': 'scaleIn 0.25s ease-out',
-        'slide-up': 'slideUp 0.4s ease-out forwards',
-        float: 'float 6s ease-in-out infinite',
-        'pulse-glow': 'pulseGlow 2.5s ease-in-out infinite',
-        'spin-slow': 'spin 3s linear infinite',
+        "fade-in-up": "fadeInUp 0.4s ease-out forwards",
+        "fade-in":    "fadeIn 0.3s ease-out forwards",
       },
       keyframes: {
         fadeInUp: {
-          from: { opacity: 0, transform: 'translateY(20px)' },
-          to: { opacity: 1, transform: 'translateY(0)' },
+          "0%":   { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        scaleIn: {
-          from: { opacity: 0, transform: 'scale(0.95)' },
-          to: { opacity: 1, transform: 'scale(1)' },
-        },
-        slideUp: {
-          from: { opacity: 0, transform: 'translateY(10px)' },
-          to: { opacity: 1, transform: 'translateY(0)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-12px)' },
-        },
-        pulseGlow: {
-          '0%, 100%': { boxShadow: '0 8px 22px rgba(28,33,67,0.18)' },
-          '50%': { boxShadow: '0 12px 32px rgba(201,168,76,0.28)' },
+        fadeIn: {
+          "0%":   { opacity: "0" },
+          "100%": { opacity: "1" },
         },
       },
     },

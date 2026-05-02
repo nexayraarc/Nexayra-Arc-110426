@@ -14,6 +14,9 @@ import {
   RadialBarChart, RadialBar, PieChart, Pie, Cell, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import ModuleSearchBar from "@/components/ModuleSearchBar";
+import { useChartTheme } from "@/lib/chart-theme";
 
 type Bank = { id: string; name?: string; currentBalance: number };
 type Expense = { id: string; date: string; amount: number };
@@ -90,6 +93,7 @@ function daysUntil(iso?: string | null): number | null {
 
 export default function CompanyOverviewPage() {
   const { role, loading: roleLoading } = useRole();
+   const t = useChartTheme();
 
   const [banks, setBanks] = useState<Bank[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -394,11 +398,14 @@ export default function CompanyOverviewPage() {
   return (
     <div>
       {/* Header */}
+      
       <div className="flex items-center gap-3 mb-1 animate-fade-in-up">
         <Crown size={24} className="text-gold" />
         <h1 className="font-display text-3xl font-bold text-navy dark:text-white">Company Overview</h1>
       </div>
       <p className="text-navy-400 text-sm mb-6">Founders' dashboard — bird's-eye view of operations, cash, and team.</p>
+      <WelcomeBanner tagline="Centralize corporate identity, compliance, and essential business records." />
+      <ModuleSearchBar module="company-overview" placeholder="Search company data…" />
 
       {/* Hero KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
@@ -537,9 +544,9 @@ export default function CompanyOverviewPage() {
           <p className="text-navy-400 text-xs mb-3">Active tenders vs secured projects</p>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={pipelineData} layout="vertical" margin={{ left: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
               <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={100} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: t.axisText }} width={100} />
               <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} formatter={(v: number) => fmtAED(v)} />
               <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                 {pipelineData.map((d, i) => <Cell key={i} fill={d.fill} />)}
@@ -580,9 +587,9 @@ export default function CompanyOverviewPage() {
           ) : (
             <ResponsiveContainer width="100%" height={Math.max(120, deptData.length * 28)}>
               <BarChart data={deptData} layout="vertical" margin={{ left: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={t.grid} horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
-                <YAxis type="category" dataKey="dept" tick={{ fontSize: 11 }} width={120} />
+                <YAxis type="category" dataKey="dept" tick={{ fontSize: 11, fill: t.axisText }} width={120} />
                 <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} />
                 <Bar dataKey="count" radius={[0, 6, 6, 0]}>
                   {deptData.map((_, i) => <Cell key={i} fill={DEPT_COLORS[i % DEPT_COLORS.length]} />)}

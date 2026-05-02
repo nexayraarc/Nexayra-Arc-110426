@@ -14,6 +14,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   AreaChart, Area, RadialBarChart, RadialBar,
 } from "recharts";
+import { useChartTheme } from "@/lib/chart-theme";
+// inside component:
+const t = useChartTheme();
 
 type Project = {
   id: string;
@@ -298,9 +301,9 @@ export default function ProjectDetailPage() {
           ) : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={monthlyExpenses}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }} />
+                <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
                   contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
                   formatter={(v: number) => fmtAED(v)}
@@ -331,9 +334,9 @@ export default function ProjectDetailPage() {
                   <stop offset="100%" stopColor="#0f766e" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }} />
+              <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <Tooltip
                 contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
                 formatter={(v: number) => fmtAED(v)}

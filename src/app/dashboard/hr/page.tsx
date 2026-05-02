@@ -5,11 +5,16 @@ import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
 import { Users, Calendar, AlertTriangle, Briefcase } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import ModuleSearchBar from "@/components/ModuleSearchBar";
+import { useChartTheme } from "@/lib/chart-theme";
+
 
 type Employee = { id: string; name: string; role: string; department: string; monthlySalary: number; status: string; visaExpiry: string; passportExpiry: string };
 const COLORS = ["#1c2143", "#c9a84c", "#0f766e", "#4150aa", "#b91c1c", "#6b56b8"];
 
 export default function HRDashboard() {
+   const t = useChartTheme();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +48,8 @@ export default function HRDashboard() {
 
   return (
     <div className="space-y-6">
+      <WelcomeBanner tagline="Empower your workforce with seamless employee and compliance management." />
+      <ModuleSearchBar module="hr" placeholder="Search employees…" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><Users size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total Employees</p></div>

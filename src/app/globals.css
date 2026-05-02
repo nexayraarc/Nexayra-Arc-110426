@@ -2,62 +2,167 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap");
+/* ============================================================
+   COLOR SYSTEM — Light Mode (defaults)
+   ============================================================
+   Brand: navy (#1c2143) and gold (#c9a84c)
+   Format: RGB triplets (no commas) so Tailwind can apply alpha
+*/
+:root {
+  /* Brand navy — light mode keeps original deep navy */
+  --c-navy:     28 33 67;        /* #1c2143 */
+  --c-navy-50:  240 241 246;
+  --c-navy-100: 219 222 232;
+  --c-navy-200: 184 189 209;
+  --c-navy-300: 137 145 178;
+  --c-navy-400: 92 102 145;
+  --c-navy-500: 65 80 122;       /* #4150aa territory */
+  --c-navy-600: 44 56 95;
+  --c-navy-700: 32 41 76;
+  --c-navy-800: 23 30 60;
+  --c-navy-900: 15 20 42;
 
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; min-height: 100vh; }
+  /* Brand gold */
+  --c-gold:     201 168 76;      /* #c9a84c */
+  --c-gold-50:  253 248 232;
+  --c-gold-100: 250 240 207;
+  --c-gold-200: 244 224 158;
+  --c-gold-300: 234 204 109;
+  --c-gold-400: 219 188 87;
+  --c-gold-500: 201 168 76;
+  --c-gold-600: 168 138 56;
+  --c-gold-700: 130 105 42;
+
+  /* Semantic tokens (light mode) */
+  --c-bg:        249 250 252;    /* page background — soft off-white */
+  --c-fg:        28 33 67;       /* default text — deep navy */
+  --c-surface:   255 255 255;    /* cards */
+  --c-surface-2: 244 246 250;    /* nested surfaces (input bg, etc) */
+  --c-border:    219 222 232;    /* navy-100 */
+  --c-muted:     137 145 178;    /* secondary text */
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES
+   ============================================================
+   The trick: redefine the SAME variables. Existing utilities like
+   `text-navy` and `bg-navy-50` automatically pick up the new values.
+*/
+.dark {
+  /* Navy: invert intensity. "navy" text now lights up, "navy-50" backgrounds darken */
+  --c-navy:     230 234 245;     /* default navy text → near white */
+  --c-navy-50:  35 42 70;        /* what used to be lightest bg → now near-dark surface */
+  --c-navy-100: 45 55 92;
+  --c-navy-200: 70 85 130;
+  --c-navy-300: 110 125 175;     /* muted text in dark mode */
+  --c-navy-400: 145 158 200;     /* secondary text in dark mode */
+  --c-navy-500: 175 188 220;
+  --c-navy-600: 200 210 235;
+  --c-navy-700: 35 42 70;        /* dark surfaces */
+  --c-navy-800: 25 32 56;        /* card surface */
+  --c-navy-900: 15 21 41;        /* deepest backgrounds */
+
+  /* Gold gets a touch lighter for contrast against dark backgrounds */
+  --c-gold:     219 188 87;      /* gold-400 territory */
+  --c-gold-50:  60 50 25;
+  --c-gold-100: 80 65 30;
+
+  /* Semantic tokens — dark mode */
+  --c-bg:        15 21 41;       /* deep navy page bg */
+  --c-fg:        230 234 245;    /* near-white text */
+  --c-surface:   25 32 56;       /* card */
+  --c-surface-2: 35 42 70;       /* nested surface */
+  --c-border:    45 55 92;
+  --c-muted:     145 158 200;
+}
+
+/* ============================================================
+   GLOBAL BASE STYLES
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: #f4f5fb;
-  color: #1c2143;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  transition: background 0.3s, color 0.3s;
+  font-family: var(--font-lato), system-ui, sans-serif;
+  font-feature-settings: "kern", "liga", "calt";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-html.dark body {
-  background: #11142a;
-  color: #f4f5fb;
+/* All headings use Poppins by default */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-html.dark .hover-lift:hover {
-  background-color: rgba(28, 33, 67, 0.4);
+/* Smooth color transitions when toggling dark mode */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #e8eaf5; }
-::-webkit-scrollbar-thumb { background: #a1a8d3; border-radius: 3px; }
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #1c2143 !important;
-  box-shadow: 0 0 0 3px rgba(28, 33, 67, 0.1);
+/* ============================================================
+   FORM ELEMENTS — fix native inputs in dark mode
+   ============================================================ */
+input, select, textarea {
+  color-scheme: light;
+}
+.dark input,
+.dark select,
+.dark textarea {
+  color-scheme: dark;
 }
 
-.delay-1 { animation-delay: 0.07s; opacity: 0; }
-.delay-2 { animation-delay: 0.14s; opacity: 0; }
-.delay-3 { animation-delay: 0.21s; opacity: 0; }
-.delay-4 { animation-delay: 0.28s; opacity: 0; }
-.delay-5 { animation-delay: 0.35s; opacity: 0; }
+/* Date pickers — fix the calendar icon being invisible in dark mode */
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="time"]::-webkit-calendar-picker-indicator,
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+}
 
-@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
-.shimmer { background: linear-gradient(90deg, #e8eaf5 25%, #f0f1f8 50%, #e8eaf5 75%); background-size: 400px 100%; animation: shimmer 1.5s infinite ease-in-out; }
+/* ============================================================
+   SCROLLBARS — match the theme
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--c-bg));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-border));
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-muted));
+}
 
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-.animate-float { animation: float 4s ease-in-out infinite; }
+/* ============================================================
+   ANIMATION CLASSES (preserved from existing code)
+   ============================================================ */
+.animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+.animate-fade-in    { animation: fadeIn 0.3s ease-out forwards; opacity: 0; }
 
-@keyframes pulse-glow { 0%,100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.3); } 50% { box-shadow: 0 0 20px 4px rgba(201,168,76,0.15); } }
-.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.10s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.20s; }
+.delay-5 { animation-delay: 0.25s; }
 
-@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
-.animate-backdrop { animation: backdrop-in 0.2s ease-out forwards; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-@keyframes modal-in { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-.animate-modal { animation: modal-in 0.3s ease-out forwards; }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 
-.hover-lift { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-.hover-lift:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(28,33,67,0.08); }
-
-.btn-press { transition: transform 0.1s ease, box-shadow 0.15s ease; }
+/* Preserve existing utilities you may use */
+.btn-press { transition: transform 0.1s ease; }
 .btn-press:active { transform: scale(0.97); }
-
-@keyframes badge-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
-.badge-pulse { animation: badge-pulse 2s ease-in-out infinite; }

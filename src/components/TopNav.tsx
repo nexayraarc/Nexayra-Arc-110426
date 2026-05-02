@@ -6,8 +6,9 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "./AuthGuard";
 import { useRole } from "@/lib/use-role";
-import { LogOut, Home } from "lucide-react";
+import { LogOut, LayoutGrid } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import { capitalize } from "@/lib/format";
 
 export default function TopNav() {
   const router = useRouter();
@@ -32,14 +33,18 @@ export default function TopNav() {
 
           <div className="flex items-center gap-3">
             {isMainAccessible && (
-              <Link href="/dashboard" className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-navy dark:text-white hover:bg-navy-50 dark:hover:bg-navy-800 rounded-lg text-sm font-semibold transition-all">
-                <Home size={15}/>
-              </Link>
+              <Link
+  href="/dashboard"
+  className="group relative w-10 h-10 rounded-xl bg-gradient-to-br from-navy to-navy-700 hover:from-gold hover:to-gold-500 flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105"
+  aria-label="Dashboard home"
+>
+  <LayoutGrid size={18} className="text-white group-hover:text-navy transition-colors" />
+</Link>
             )}
             <div className="hidden sm:block text-right">
-              <p className="text-sm font-semibold text-navy dark:text-white leading-none">{user?.email?.split("@")[0] || "User"}</p>
+              <p className="text-sm font-semibold text-navy dark:text-white leading-none">{capitalize(auth.currentUser?.email?.split("@")[0])}</p>
               <p className="text-[11px] text-navy-400 mt-0.5">{user?.email || ""} {role && <span className="ml-1 px-1.5 py-0.5 bg-navy-50 dark:bg-navy-700 rounded text-[9px] uppercase font-bold">{role}</span>}</p>
-            </div>
+            </div>  
             <ThemeToggle />
             <button onClick={handleSignOut}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-sm font-semibold btn-press">
