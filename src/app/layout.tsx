@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lato, Poppins } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/lib/theme-provider";
 
 const lato = Lato({
   subsets: ["latin"],
@@ -23,9 +24,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${lato.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${lato.variable} ${poppins.variable}`} suppressHydrationWarning>
       <body className="font-body antialiased bg-bg text-fg transition-colors">
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

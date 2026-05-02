@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtAED, fmtDate } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { Plus, Trash2, Banknote } from "lucide-react";
 
 type Invoice = { id: string; invoiceNo: string; clientName: string; total: number; amountPaid: number; outstanding: number; status: string; date: string; dueDate: string; projectId: string };
@@ -61,7 +62,7 @@ export default function InvoicingPage() {
 
   const delCol = async (id: string) => { if (!confirm("Delete collection?")) return; await apiCall(`/api/collections?id=${id}`, { method: "DELETE" }); load(); };
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
   const totalInvoiced = invoices.reduce((s,i)=>s+i.total,0);

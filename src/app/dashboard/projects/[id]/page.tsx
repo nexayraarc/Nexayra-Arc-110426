@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
+import Loader from "@/components/Loader";
 import {
   ArrowLeft, MapPin, Calendar, User, Building2, Briefcase,
   DollarSign, TrendingUp, AlertTriangle, CheckCircle2, FileText, Receipt,
@@ -15,8 +16,7 @@ import {
   AreaChart, Area, RadialBarChart, RadialBar,
 } from "recharts";
 import { useChartTheme } from "@/lib/chart-theme";
-// inside component:
-const t = useChartTheme();
+import { Sparkles, Loader2 } from "lucide-react";
 
 type Project = {
   id: string;
@@ -50,6 +50,7 @@ export default function ProjectDetailPage() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as string;
+  const t = useChartTheme();
 
   const [project, setProject] = useState<Project | null>(null);
   const [expenses, setExpenses] = useState<PE[]>([]);
@@ -57,6 +58,31 @@ export default function ProjectDetailPage() {
   const [invoices, setInvoices] = useState<Inv[]>([]);
   const [collections, setCollections] = useState<Col[]>([]);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+const [drafts, setDrafts] = useState<any[] | null>(null);
+const [genError, setGenError] = useState("");
+
+const generatePosts = async () => {
+  if (!projectId) {
+    setGenError("Project ID is missing.");
+    return;
+  }
+
+  setGenerating(true);
+  setGenError("");
+  setDrafts(null);
+  try {
+    const res = await apiCall<{ drafts: any[] }>("/api/marketing/generate-post", {
+      method: "POST",
+      body: { projectId },
+    });
+    setDrafts(res.drafts);
+  } catch (err: any) {
+    setGenError(err.message);
+  } finally {
+    setGenerating(false);
+  }
+};
 
   useEffect(() => {
     (async () => {
@@ -161,11 +187,7 @@ export default function ProjectDetailPage() {
   ];
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Loader compact />;
   }
 
   if (!project) {
@@ -267,6 +289,30 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       </div>
+
+      <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-5 text-white shadow-sm animate-fade-in-up">
+  <div className="flex items-center gap-2 mb-2">
+    <Sparkles size={18} className="text-white" />
+    <h3 className="font-display text-base font-bold">Marketing Boost</h3>
+  </div>
+  <p className="text-purple-100 text-xs mb-3">Generate ready-to-post LinkedIn, Instagram, and TikTok content from this project.</p>
+  <button
+    onClick={generatePosts}
+    disabled={generating}
+    className="w-full px-3 py-2 bg-white hover:bg-purple-50 disabled:opacity-50 text-purple-700 rounded-lg text-sm font-bold flex items-center justify-center gap-2"
+  >
+    {generating ? <><Loader2 size={14} className="animate-spin" /> Generating drafts…</> : <><Sparkles size={14} /> Generate Marketing Posts</>}
+  </button>
+  {drafts && (
+    <div className="mt-3 bg-white/10 rounded-lg p-3 text-xs">
+      <p className="font-bold text-white mb-1">✓ {drafts.length} drafts created</p>
+      <Link href="/dashboard/marketing" className="text-white underline hover:text-purple-200">
+        View in Marketing module →
+      </Link>
+    </div>
+  )}
+  {genError && <p className="text-red-200 text-xs mt-2">{genError}</p>}
+</div>
 
       {/* Charts row 1 */}
       <div className="grid lg:grid-cols-2 gap-5 mb-5">

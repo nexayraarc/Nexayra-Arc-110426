@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtAED } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { Plus } from "lucide-react";
 
 type Project = { id: string; code: string; name: string; client: string; contractValue: number; startDate: string; endDate: string; status: string; totalExpenses: number; totalInvoiced: number; totalCollected: number; profit: number };
@@ -49,7 +50,7 @@ export default function ProjectsPage() {
   };
 
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
 

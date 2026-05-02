@@ -3,12 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { fmtAED, fmtDate } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { Truck, Key, Calendar, Building2 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import Link from "next/link";
 import WelcomeBanner from "@/components/WelcomeBanner";
 import ModuleSearchBar from "@/components/ModuleSearchBar";
 import { useChartTheme } from "@/lib/chart-theme";
+import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { Fuel, Wrench } from "lucide-react";
 
 type Vehicle = { id: string; plateNumber: string; make: string; model: string; year: string; ownership: string; monthlyRentalCost: number; rentalCompany: string; registrationExpiry: string; insuranceExpiry: string; currentPossession: any };
 
@@ -45,7 +48,7 @@ export default function LogisticsDashboard() {
     { name: "Rented", value: kpis.rented },
   ].filter(d => d.value > 0);
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   return (
     <div className="space-y-6">
@@ -107,6 +110,19 @@ export default function LogisticsDashboard() {
         </div>
       </div>
 
+      <Link
+  href="/dashboard/logistics/assets"
+  className="group flex items-center gap-4 p-5 rounded-2xl bg-surface border border-border hover:border-gold hover:shadow-md hover:scale-[1.01] transition-all duration-200 shadow-sm animate-fade-in-up delay-3"
+>
+  <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0 shadow-sm">
+    <Wrench size={22} className="text-white" />
+  </div>
+  <div className="flex-1 min-w-0">
+    <h3 className="text-navy dark:text-white font-bold">High-Value Assets</h3>
+    <p className="text-navy-400 text-sm">Track tools and equipment with location</p>
+  </div>
+</Link>
+
       <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-lato text-lg font-bold text-navy dark:text-white">Fleet Status</h3>
@@ -131,6 +147,13 @@ export default function LogisticsDashboard() {
           </div>
         )}
       </div>
+      <FloatingActionMenu
+  actions={[
+    { icon: Truck, label: "Assign Vehicle to Project",      href: "/dashboard/logistics/vehicles?action=assign" },
+    { icon: Fuel, label: "Log Fuel Receipt / Salik Top-up", onClick: () => alert("Fuel & Salik tracking coming soon.") },
+    { icon: Wrench, label: "Schedule Vehicle Maintenance",   href: "/dashboard/logistics/vehicles?action=maintenance" },
+  ]}
+/>
     </div>
   );
 }   

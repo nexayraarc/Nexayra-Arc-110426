@@ -1,33 +1,47 @@
 "use client";
 
-import { useTheme } from "@/lib/theme";
-import { Sun, Moon } from "lucide-react";
+import { useTheme } from "@/lib/theme-provider";
+import { Sun, Moon, Sunrise } from "lucide-react";
 
 export default function ThemeToggle() {
-  const { theme, toggle, mounted } = useTheme();
-  if (!mounted) return <div className="w-10 h-10"/>;
-
-  const isDark = theme === "dark";
+  const { mode, setMode, theme } = useTheme();
 
   return (
-    <button
-      onClick={toggle}
-      aria-label="Toggle theme"
-      className="relative w-10 h-10 rounded-xl bg-navy-50 dark:bg-navy-800 border border-navy-200 dark:border-navy-700 flex items-center justify-center overflow-hidden group hover:scale-105 transition-transform btn-press"
-    >
-      <Sun
-        size={18}
-        className={`absolute text-amber-500 transition-all duration-500 ${
-          isDark ? "opacity-0 -rotate-90 scale-50" : "opacity-100 rotate-0 scale-100"
+    <div className="inline-flex items-center bg-navy-50 dark:bg-navy-700 rounded-xl p-0.5 gap-0.5">
+      <button
+        onClick={() => setMode("auto")}
+        className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-all ${
+          mode === "auto"
+            ? "bg-gold text-navy shadow-sm"
+            : "text-navy-400 hover:text-navy dark:hover:text-white"
         }`}
-      />
-      <Moon
-        size={18}
-        className={`absolute text-indigo-300 transition-all duration-500 ${
-          isDark ? "opacity-100 rotate-0 scale-100" : "opacity-0 rotate-90 scale-50"
+        title="Auto (time-based)"
+      >
+        <Sunrise size={13} />
+        <span className="hidden sm:inline">Auto</span>
+      </button>
+      <button
+        onClick={() => setMode("light")}
+        className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-all ${
+          mode === "light"
+            ? "bg-gold text-navy shadow-sm"
+            : "text-navy-400 hover:text-navy dark:hover:text-white"
         }`}
-      />
-      <span className={`absolute inset-0 rounded-xl bg-gradient-to-br ${isDark ? "from-indigo-500/10 to-purple-500/5" : "from-amber-400/10 to-orange-300/5"} opacity-0 group-hover:opacity-100 transition-opacity`}/>
-    </button>
+        title="Light"
+      >
+        <Sun size={13} />
+      </button>
+      <button
+        onClick={() => setMode("dark")}
+        className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition-all ${
+          mode === "dark"
+            ? "bg-gold text-navy shadow-sm"
+            : "text-navy-400 hover:text-navy dark:hover:text-white"
+        }`}
+        title="Dark"
+      >
+        <Moon size={13} />
+      </button>
+    </div>
   );
 }

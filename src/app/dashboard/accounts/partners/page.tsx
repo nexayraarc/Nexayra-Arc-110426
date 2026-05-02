@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtAED, fmtDate } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { Plus, Trash2, TrendingUp, TrendingDown } from "lucide-react";
 
 type Partner = { id: string; name: string; email: string; ownershipPct: number; contributed: number; withdrawn: number; distributed: number; netCapital: number };
@@ -59,7 +60,7 @@ export default function PartnersPage() {
     await apiCall(`/api/partner-transactions?id=${id}`, { method: "DELETE" }); load();
   };
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
   const totalPct = partners.reduce((s,p) => s + p.ownershipPct, 0);

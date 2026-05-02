@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -29,11 +30,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [user, loading, router]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-navy-50 dark:bg-navy-900">
-        <div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   if (!user) return null;

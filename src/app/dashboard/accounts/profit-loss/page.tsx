@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area } from "recharts";
 import { TrendingUp, TrendingDown, Target, Percent } from "lucide-react";
 import { useChartTheme } from "@/lib/chart-theme";
@@ -91,7 +92,7 @@ export default function ProfitLossPage() {
     }).sort((a,b)=>b.contractValue-a.contractValue).slice(0, 8);
   }, [projects, projectExp]);
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   const inp = "px-3 py-2 bg-white border border-navy-200 rounded-lg text-navy dark:text-white text-sm";
   const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i);

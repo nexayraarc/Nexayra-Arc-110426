@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAuth, checkFirebaseInit } from "@/lib/api-auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const fbCheck = checkFirebaseInit();
   if (fbCheck) return fbCheck;

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { ArrowLeft, Briefcase, Save } from "lucide-react";
+import Loader from "@/components/Loader";
 
 const STATUSES = ["Planning", "Ongoing", "Completed", "On Hold"];
 
@@ -30,7 +31,7 @@ export default function NewProjectPage() {
   const [error, setError] = useState("");
 
   if (roleLoading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" /></div>;
+    return <Loader compact />;
   }
 
   const canCreate = role === "admin" || role === "project-manager";

@@ -5,54 +5,50 @@ import { useEffect, useState } from "react";
 export type ChartTheme = {
   grid: string;
   axisText: string;
-  tooltipBg: string;
-  tooltipBorder: string;
-  tooltipText: string;
   tooltipStyle: React.CSSProperties;
+  /** Legend text color */
+  legendText: string;
 };
 
-const lightTheme: ChartTheme = {
-  grid: "#e5e7eb",
-  axisText: "#5c6691",
-  tooltipBg: "#1c2143",
-  tooltipBorder: "rgba(255,255,255,0.1)",
-  tooltipText: "#ffffff",
-  tooltipStyle: {
-    background: "#1c2143",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 10,
-    color: "#ffffff",
-    fontSize: 12,
-  },
-};
+function readChartVars(): ChartTheme {
+  if (typeof window === "undefined") {
+    return {
+      grid: "#e5e7eb",
+      axisText: "#4a5568",
+      legendText: "#4a5568",
+      tooltipStyle: { background: "#192A56", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#ffffff", fontSize: 12 },
+    };
+  }
+  const styles = getComputedStyle(document.documentElement);
+  const r = (varName: string) => `rgb(${styles.getPropertyValue(varName).trim()})`;
 
-const darkTheme: ChartTheme = {
-  grid: "rgba(255,255,255,0.08)",
-  axisText: "#919eC8",
-  tooltipBg: "#0f1529",
-  tooltipBorder: "rgba(255,255,255,0.15)",
-  tooltipText: "#e6eaf5",
-  tooltipStyle: {
-    background: "#0f1529",
-    border: "1px solid rgba(255,255,255,0.15)",
-    borderRadius: 10,
-    color: "#e6eaf5",
-    fontSize: 12,
-  },
-};
+  return {
+    grid: r("--c-chart-grid"),
+    axisText: r("--c-chart-text"),
+    legendText: r("--c-chart-text"),
+    tooltipStyle: {
+      background: r("--c-chart-tooltip-bg"),
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: 10,
+      color: r("--c-chart-tooltip-fg"),
+      fontSize: 12,
+      padding: "8px 12px",
+    },
+  };
+}
 
 export function useChartTheme(): ChartTheme {
-  const [isDark, setIsDark] = useState(false);
+  const [theme, setTheme] = useState<ChartTheme>(() => readChartVars());
 
   useEffect(() => {
-    if (typeof document === "undefined") return;
-    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
-    check();
+    const update = () => setTheme(readChartVars());
+    update();
 
-    const observer = new MutationObserver(check);
+    // Re-read whenever the .dark class flips on <html>
+    const observer = new MutationObserver(update);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
     return () => observer.disconnect();
   }, []);
 
-  return isDark ? darkTheme : lightTheme;
+  return theme;
 }

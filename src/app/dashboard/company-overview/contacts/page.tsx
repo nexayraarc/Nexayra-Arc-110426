@@ -8,6 +8,7 @@ import {
   Users, Plus, Search, Phone, Mail, MapPin, Building2, Star,
   Trash2, Edit3, X, ArrowLeft, Filter,
 } from "lucide-react";
+import Loader from "@/components/Loader";
 
 type Contact = {
   id: string;
@@ -72,7 +73,7 @@ export default function ContactsPage() {
   }, [contacts]);
 
   if (roleLoading || loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" /></div>;
+    return <Loader compact />;
   }
 
   const canEdit = ["admin", "accounts", "procurement", "estimation", "hr"].includes(role || "");

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -40,15 +41,11 @@ export default function LoginPage() {
   };
 
   if (checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-navy-50">
-        <div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-white/100">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-white ">
       <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-navy/5 blur-3xl" />
       <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-navy/5 blur-3xl" />
 

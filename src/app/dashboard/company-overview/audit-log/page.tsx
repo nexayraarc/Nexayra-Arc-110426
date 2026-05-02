@@ -7,6 +7,7 @@ import { apiCall } from "@/lib/api-client";
 import {
   Activity, ArrowLeft, Search, User, Filter, RefreshCw,
 } from "lucide-react";
+import Loader from "@/components/Loader";
 
 type AuditLog = {
   id: string;
@@ -73,7 +74,7 @@ export default function AuditLogPage() {
   }, [logs, search, actionFilter, entityFilter]);
 
   if (roleLoading || loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" /></div>;
+    return <Loader compact />;
   }
   if (role !== "admin") return <div className="text-center py-16 text-red-500">403 — Audit log is admin-only.</div>;
 

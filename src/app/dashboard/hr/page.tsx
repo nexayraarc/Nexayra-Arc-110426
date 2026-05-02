@@ -3,11 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { Users, Calendar, AlertTriangle, Briefcase } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import WelcomeBanner from "@/components/WelcomeBanner";
 import ModuleSearchBar from "@/components/ModuleSearchBar";
 import { useChartTheme } from "@/lib/chart-theme";
+import { FileSpreadsheet } from "lucide-react";
+import Link from "next/link";
+import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { UserPlus, ContactRound } from "lucide-react";
 
 
 type Employee = { id: string; name: string; role: string; department: string; monthlySalary: number; status: string; visaExpiry: string; passportExpiry: string };
@@ -44,7 +49,7 @@ export default function HRDashboard() {
     return checks.some(d => { const t = new Date(d); return t >= today && t <= soon; });
   });
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   return (
     <div className="space-y-6">
@@ -71,6 +76,19 @@ export default function HRDashboard() {
         </div>
       </div>
 
+      <Link
+  href="/dashboard/hr/wps-export"
+  className="group flex items-center gap-4 p-5 rounded-2xl bg-surface border border-border hover:border-gold hover:shadow-md hover:scale-[1.01] transition-all duration-200 shadow-sm animate-fade-in-up delay-2"
+>
+  <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0 shadow-sm">
+    <FileSpreadsheet size={22} className="text-white" />
+  </div>
+  <div className="flex-1 min-w-0">
+    <h3 className="text-navy dark:text-white font-bold">WPS Export</h3>
+    <p className="text-navy-400 text-sm">Generate UAE-compliant salary files</p>
+  </div>
+</Link>
+
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
           <h3 className="font-lato text-lg font-bold text-navy dark:text-white mb-4">Employees by Role</h3>
@@ -85,6 +103,7 @@ export default function HRDashboard() {
               </PieChart>
             </ResponsiveContainer>
           )}
+          
         </div>
         <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-6 shadow-sm">
           <h3 className="font-latoxt-lg font-bold text-navy dark:text-white mb-4">Document Alerts</h3>
@@ -102,6 +121,13 @@ export default function HRDashboard() {
             </div>
           )}
         </div>
+        <FloatingActionMenu
+  actions={[
+    { icon: UserPlus, label: "Onboard New Employee",     href: "/dashboard/hr/employees?action=new" },
+    { icon: ContactRound, label: "Update Visa / Emirates ID", href: "/dashboard/hr/employees?action=compliance" },
+    { icon: Calendar, label: "Approve/Log Leave Request", onClick: () => alert("Leave management coming soon.") },
+  ]}
+/>
       </div>
     </div>
   );

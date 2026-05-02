@@ -5,7 +5,10 @@ import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from "recharts";import WelcomeBanner from "@/components/WelcomeBanner";
 import ModuleSearchBar from "@/components/ModuleSearchBar";
+import Loader from "@/components/Loader";
 import { useChartTheme } from "@/lib/chart-theme";
+import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { Receipt, FileText, Wallet } from "lucide-react";
 
 
 type Bank = { id: string; currentBalance: number };
@@ -65,7 +68,7 @@ export default function AccountsDashboard() {
     });
   }, [collections, expenses, projectExp]);
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   
 
@@ -75,10 +78,10 @@ export default function AccountsDashboard() {
       <ModuleSearchBar module="accounts" placeholder="Search expenses, invoices, partners, bank accounts…" />
       {/* KPIs */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5"><p className="text-navy dark:text-white-200 text-xs uppercase font-bold tracking-wider">Cash in Hand</p><p className="text-2xl font-bold mt-1">{fmtAED(kpis.totalCash)}</p></div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-green-600 text-xs uppercase font-bold tracking-wider">YTD Revenue</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdRevenue)}</p></div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-red-500 text-xs uppercase font-bold tracking-wider">YTD Expenses</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdExp)}</p></div>
-        <div className="bg-white border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-gold text-xs uppercase font-bold tracking-wider">YTD Profit</p><p className={`text-2xl font-bold mt-1 ${kpis.ytdProfit >= 0 ? "text-green-600" : "text-red-500"}`}>{fmtAED(kpis.ytdProfit)}</p></div>
+        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5"><p className="text-white dark:text-white-200 text-xs uppercase font-bold tracking-wider">Cash in Hand</p><p className="text-2xl font-bold text-white mt-1">{fmtAED(kpis.totalCash)}</p></div>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-green-600 text-xs uppercase font-bold tracking-wider">YTD Revenue</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdRevenue)}</p></div>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-red-500 text-xs uppercase font-bold tracking-wider">YTD Expenses</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdExp)}</p></div>
+        <div className="bg-white dark:bg-navy-800 border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-gold text-xs uppercase font-bold tracking-wider">YTD Profit</p><p className={`text-2xl font-bold mt-1 ${kpis.ytdProfit >= 0 ? "text-green-600" : "text-red-500"}`}>{fmtAED(kpis.ytdProfit)}</p></div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -125,6 +128,13 @@ export default function AccountsDashboard() {
           </LineChart>
         </ResponsiveContainer>
       </div>
+      <FloatingActionMenu
+  actions={[
+    { icon: Receipt, label: "Log Quick Expense",       href: "/dashboard/accounts/expenses?action=new" },
+    { icon: FileText, label: "Create Tax Invoice",      href: "/dashboard/accounts/tax-invoice" },
+    { icon: Wallet, label: "Record Incoming Payment", href: "/dashboard/accounts/invoicing?action=record" },
+  ]}
+/>
     </div>
   );
 }

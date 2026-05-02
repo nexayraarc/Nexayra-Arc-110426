@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtAED, fmtDate } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { Plus, Trash2, Pencil, Check, X, Key, AlertTriangle } from "lucide-react";
+import LocationCapture from "@/components/LocationCapture";
+
 
 type Vehicle = {
   id: string;

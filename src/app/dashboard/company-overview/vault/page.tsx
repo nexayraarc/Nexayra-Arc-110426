@@ -9,6 +9,7 @@ import {
   Shield, Upload, FileText, Calendar, AlertTriangle, CheckCircle2,
   Trash2, Download, X, Sparkles, ArrowLeft, Search, Filter,
 } from "lucide-react";
+import Loader from "@/components/Loader";
 
 type VaultDoc = {
   id: string;
@@ -101,7 +102,7 @@ export default function VaultPage() {
   }, [docs]);
 
   if (roleLoading || loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" /></div>;
+    return <Loader compact />;
   }
   if (role !== "admin") return <div className="text-center py-16 text-red-500">403 — Admin only.</div>;
 

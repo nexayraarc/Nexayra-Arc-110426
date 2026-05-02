@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRole } from "@/lib/use-role";
 import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
+import Loader from "@/components/Loader";
 import {
   TrendingUp, AlertTriangle, CheckCircle2, Users, Truck,
   Wallet, Activity, Crown, Clock, Zap,
@@ -17,6 +18,8 @@ import {
 import WelcomeBanner from "@/components/WelcomeBanner";
 import ModuleSearchBar from "@/components/ModuleSearchBar";
 import { useChartTheme } from "@/lib/chart-theme";
+import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { FileUp, Banknote, Megaphone as Announcement } from "lucide-react";
 
 type Bank = { id: string; name?: string; currentBalance: number };
 type Expense = { id: string; date: string; amount: number };
@@ -387,7 +390,7 @@ export default function CompanyOverviewPage() {
 
   // ---------- Render ----------
   if (roleLoading || loading) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" /></div>;
+    return <Loader compact />;
   }
   if (role !== "admin") {
     return <div className="text-center py-16 text-red-500">403 — Founders' dashboard is admin-only.</div>;
@@ -457,8 +460,8 @@ export default function CompanyOverviewPage() {
           <p className="text-navy-200 text-xs">Trade licenses, IDs, certificates with auto-extraction & expiry alerts.</p>
         </Link>
 
-        <Link href="/dashboard/company-overview/brand"
-          className="bg-gradient-to-br from-gold to-gold-500 text-navy rounded-2xl p-5 shadow-sm hover:scale-[1.01] transition-all animate-fade-in-up">
+        <Link href="/dashboard/marketing/brand-hub"
+  className="bg-gradient-to-br from-gold to-gold-500 text-navy rounded-2xl p-5 shadow-sm hover:scale-[1.01] transition-all animate-fade-in-up">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-navy/10 flex items-center justify-center"><Palette size={20} className="text-navy" /></div>
             <h3 className="font-display text-base font-bold">Brand Hub</h3>
@@ -475,7 +478,7 @@ export default function CompanyOverviewPage() {
           <p className="text-teal-100 text-xs">Subcontractors, suppliers, consultants, labour with ratings.</p>
         </Link>
 
-        <Link href="/dashboard/company-overview/assets"
+        <Link href="/dashboard/logistics/assets"
           className="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-2xl p-5 shadow-sm hover:scale-[1.01] transition-all animate-fade-in-up">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><Wrench size={20} className="text-white" /></div>
@@ -725,6 +728,13 @@ export default function CompanyOverviewPage() {
             </div>
           )}
         </div>
+        <FloatingActionMenu
+  actions={[
+    { icon: FileUp, label: "Upload Corporate Document",     href: "/dashboard/company-overview/vault?action=upload" },
+    { icon: Banknote, label: "Log Capital/Equity Update",     href: "/dashboard/accounts/partners?action=new" },
+    { icon: Announcement, label: "Post Company-Wide Announcement", onClick: () => alert("Announcements module coming soon — will broadcast a banner to all users.") },
+  ]}
+/>
       </div>
     </div>
   );

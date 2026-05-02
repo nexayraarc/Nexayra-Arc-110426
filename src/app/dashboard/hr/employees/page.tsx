@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtAED, fmtDate } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { Plus, Trash2, Pencil, Check, X, AlertTriangle } from "lucide-react";
 
 type Employee = {

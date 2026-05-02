@@ -7,7 +7,7 @@ import { auth } from "@/lib/firebase";
 import { useAuth } from "./AuthGuard";
 import { useRole } from "@/lib/use-role";
 import { LogOut, LayoutGrid } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "./ThemeToggleControl";
 import { capitalize } from "@/lib/format";
 
 export default function TopNav() {

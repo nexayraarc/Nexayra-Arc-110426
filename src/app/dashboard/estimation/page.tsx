@@ -8,13 +8,12 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import Link from "next/link";
 import WelcomeBanner from "@/components/WelcomeBanner";
 import ModuleSearchBar from "@/components/ModuleSearchBar";
-import { useChartTheme } from "@/lib/chart-theme";
-
+import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { Plus, Copy } from "lucide-react";
 
 type Quotation = { quotationNo: string; clientName?: string; to?: string; totalWithVat: number; createdAt: string };
 
 export default function EstimationDashboard() {
-   const t = useChartTheme();
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -95,6 +94,13 @@ export default function EstimationDashboard() {
           </div>
         )}
       </div>
+      <FloatingActionMenu
+  actions={[
+    { icon: ClipboardList, label: "Start New Quotation",       href: "/dashboard/estimation/quotation" },
+    { icon: Plus, label: "Add Item to Master Catalog", href: "/dashboard/estimation/quotation?action=catalog" },
+    { icon: Copy, label: "Duplicate Existing Quotation", href: "/dashboard/estimation/quotation/history" },
+  ]}
+/>
     </div>
   );
 }

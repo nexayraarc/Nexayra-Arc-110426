@@ -3,12 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiCall } from "@/lib/api-client";
 import { fmtAED, fmtDate } from "@/lib/format";
+import Loader from "@/components/Loader";
 import { ShoppingCart, CheckCircle, Clock, TrendingUp } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import Link from "next/link";
 import WelcomeBanner from "@/components/WelcomeBanner";
 import ModuleSearchBar from "@/components/ModuleSearchBar";
 import { useChartTheme } from "@/lib/chart-theme";
+import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { PackageCheck, Building2 } from "lucide-react";
 
 
 type Lpo = { nxrNo: number; clientName: string; vendorName: string; total: number; approved: boolean; createdAt: string };
@@ -52,7 +55,7 @@ export default function ProcurementDashboard() {
     });
   }, [lpos]);
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   return (
     <div className="space-y-6">
@@ -129,6 +132,13 @@ export default function ProcurementDashboard() {
           </div>
         )}
       </div>
+      <FloatingActionMenu
+  actions={[
+    { icon: ShoppingCart, label: "Generate New LPO",       href: "/dashboard/procurement/lpo" },
+    { icon: PackageCheck, label: "Log Goods Receipt Note", onClick: () => alert("GRN module coming soon.") },
+    { icon: Building2, label: "Add New Vendor",          href: "/dashboard/procurement/lpo?action=newVendor" },
+  ]}
+/>
     </div>
   );
 }

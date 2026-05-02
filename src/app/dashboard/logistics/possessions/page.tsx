@@ -5,6 +5,7 @@ import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtDate } from "@/lib/format";
 import { Trash2 } from "lucide-react";
+import Loader from "@/components/Loader";
 
 type Possession = { id: string; vehicleId: string; employeeName: string; assignedDate: string; returnDate: string | null; purpose: string; notes: string };
 type Vehicle = { id: string; plateNumber: string; make: string; model: string };
@@ -32,7 +33,7 @@ export default function PossessionsPage() {
     await apiCall(`/api/vehicle-possessions?id=${id}`, { method: "DELETE" }); load();
   };
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   const inp = "px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm";
   const filtered = filterVehicle ? possessions.filter(p => p.vehicleId === filterVehicle) : possessions;

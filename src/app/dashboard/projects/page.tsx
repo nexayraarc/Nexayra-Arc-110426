@@ -14,6 +14,9 @@ import {
 } from "recharts";
 import WelcomeBanner from "@/components/WelcomeBanner";
 import { useChartTheme } from "@/lib/chart-theme";
+import Loader from "@/components/Loader";
+import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { FolderPlus, Camera } from "lucide-react";
 
 
 type Project = {
@@ -165,21 +168,17 @@ export default function ProjectsPage() {
   }, [projects, search, statusFilter]);
 
   if (roleLoading || loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-[3px] border-navy border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Loader compact />;
   }
 
   const canCreate = role === "admin" || role === "project-manager";
 
   return (
-    <div>
+    <><div>
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6 animate-fade-in-up">
         <div>
-          
+
           <p className="text-navy-400 text-sm">Live overview of all active and historical projects.</p>
         </div>
         {canCreate && (
@@ -201,8 +200,7 @@ export default function ProjectsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by project name, code, or client…"
-              className="w-full pl-9 pr-4 py-2.5 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white placeholder-navy-400 focus:outline-none focus:border-gold transition-all"
-            />
+              className="w-full pl-9 pr-4 py-2.5 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white placeholder-navy-400 focus:outline-none focus:border-gold transition-all" />
           </div>
           <select
             value={statusFilter}
@@ -279,8 +277,7 @@ export default function ProjectsPage() {
                 <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
                   contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
-                  formatter={(v: number) => fmtAED(v)}
-                />
+                  formatter={(v: number) => fmtAED(v)} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Bar dataKey="contract" fill="#1c2143" name="Contract" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="spent" fill="#c9a84c" name="Spent" radius={[4, 4, 0, 0]} />
@@ -305,8 +302,7 @@ export default function ProjectsPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
-                  formatter={(v: number) => fmtAED(v)}
-                />
+                  formatter={(v: number) => fmtAED(v)} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
@@ -338,8 +334,7 @@ export default function ProjectsPage() {
               <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <Tooltip
                 contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
-                formatter={(v: number) => fmtAED(v)}
-              />
+                formatter={(v: number) => fmtAED(v)} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Area type="monotone" dataKey="billed" stroke="#1c2143" strokeWidth={2} fill="url(#billedGrad)" name="Billed" />
               <Area type="monotone" dataKey="received" stroke="#c9a84c" strokeWidth={2} fill="url(#recvGrad)" name="Received" />
@@ -348,7 +343,7 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      
+
 
       {/* Project list */}
       {filtered.length === 0 ? (
@@ -407,8 +402,7 @@ export default function ProjectsPage() {
                     <div className="h-1.5 bg-navy-50 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full ${overBudget ? "bg-red-500" : "bg-gold"}`}
-                        style={{ width: `${utilization}%` }}
-                      />
+                        style={{ width: `${utilization}%` }} />
                     </div>
                   </div>
                 )}
@@ -416,7 +410,13 @@ export default function ProjectsPage() {
             );
           })}
         </div>
+
       )}
-    </div>
+    </div><FloatingActionMenu
+        actions={[
+          { icon: FolderPlus, label: "Create New Project", href: "/dashboard/projects/new" },
+          { icon: Camera, label: "Log Site Progress Photo", onClick: () => alert("Site progress photo upload coming soon — will tie into Marketing module.") },
+          { icon: AlertTriangle, label: "Report Site Issue/Delay", onClick: () => alert("Issue reporting workflow coming soon.") },
+        ]} /></>
   );
 }

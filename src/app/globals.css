@@ -3,146 +3,142 @@
 @tailwind utilities;
 
 /* ============================================================
-   COLOR SYSTEM — Light Mode (defaults)
-   ============================================================
-   Brand: navy (#1c2143) and gold (#c9a84c)
-   Format: RGB triplets (no commas) so Tailwind can apply alpha
-*/
+   COLOR SYSTEM — Light Mode
+   Brand: navy #192A56, gold #C6A35E, slate #718096
+   ============================================================ */
 :root {
-  /* Brand navy — light mode keeps original deep navy */
-  --c-navy:     28 33 67;        /* #1c2143 */
-  --c-navy-50:  240 241 246;
-  --c-navy-100: 219 222 232;
-  --c-navy-200: 184 189 209;
-  --c-navy-300: 137 145 178;
-  --c-navy-400: 92 102 145;
-  --c-navy-500: 65 80 122;       /* #4150aa territory */
-  --c-navy-600: 44 56 95;
-  --c-navy-700: 32 41 76;
-  --c-navy-800: 23 30 60;
-  --c-navy-900: 15 20 42;
+  /* Brand navy — #192A56 */
+  --c-navy:     25 42 86;
+  --c-navy-50:  240 242 247;
+  --c-navy-100: 218 222 235;
+  --c-navy-200: 180 188 213;
+  --c-navy-300: 135 147 184;
+  --c-navy-400: 92 108 152;
+  --c-navy-500: 56 75 122;
+  --c-navy-600: 38 56 102;
+  --c-navy-700: 25 42 86;        /* brand */
+  --c-navy-800: 18 32 68;
+  --c-navy-900: 12 22 50;
 
-  /* Brand gold */
-  --c-gold:     201 168 76;      /* #c9a84c */
-  --c-gold-50:  253 248 232;
-  --c-gold-100: 250 240 207;
-  --c-gold-200: 244 224 158;
-  --c-gold-300: 234 204 109;
-  --c-gold-400: 219 188 87;
-  --c-gold-500: 201 168 76;
-  --c-gold-600: 168 138 56;
-  --c-gold-700: 130 105 42;
+  /* Brand gold — #C6A35E */
+  --c-gold:     198 163 94;
+  --c-gold-50:  252 247 235;
+  --c-gold-100: 248 235 205;
+  --c-gold-200: 241 217 158;
+  --c-gold-300: 232 196 116;
+  --c-gold-400: 218 178 80;
+  --c-gold-500: 198 163 94;      /* brand */
+  --c-gold-600: 163 132 65;
+  --c-gold-700: 125 100 48;
+
+  /* Brand slate — #718096 */
+  --c-slate:    113 128 150;
+  --c-slate-50: 247 248 250;
+  --c-slate-100: 226 232 240;
+  --c-slate-200: 203 213 224;
+  --c-slate-300: 160 174 192;
+  --c-slate-400: 113 128 150;    /* brand */
+  --c-slate-500: 74 85 104;
 
   /* Semantic tokens (light mode) */
-  --c-bg:        249 250 252;    /* page background — soft off-white */
-  --c-fg:        28 33 67;       /* default text — deep navy */
-  --c-surface:   255 255 255;    /* cards */
-  --c-surface-2: 244 246 250;    /* nested surfaces (input bg, etc) */
-  --c-border:    219 222 232;    /* navy-100 */
-  --c-muted:     137 145 178;    /* secondary text */
+  --c-bg:        249 250 252;
+  --c-fg:        25 42 86;
+  --c-surface:   255 255 255;
+  --c-surface-2: 244 246 250;
+  --c-border:    218 222 235;
+  --c-muted:     113 128 150;
+
+  /* Chart-specific */
+  --c-chart-grid:    229 231 235;
+  --c-chart-text:    74 85 104;
+  --c-chart-tooltip-bg: 25 42 86;
+  --c-chart-tooltip-fg: 255 255 255;
 }
 
 /* ============================================================
    DARK MODE OVERRIDES
-   ============================================================
-   The trick: redefine the SAME variables. Existing utilities like
-   `text-navy` and `bg-navy-50` automatically pick up the new values.
-*/
+   ============================================================ */
 .dark {
-  /* Navy: invert intensity. "navy" text now lights up, "navy-50" backgrounds darken */
-  --c-navy:     230 234 245;     /* default navy text → near white */
-  --c-navy-50:  35 42 70;        /* what used to be lightest bg → now near-dark surface */
-  --c-navy-100: 45 55 92;
-  --c-navy-200: 70 85 130;
-  --c-navy-300: 110 125 175;     /* muted text in dark mode */
-  --c-navy-400: 145 158 200;     /* secondary text in dark mode */
-  --c-navy-500: 175 188 220;
-  --c-navy-600: 200 210 235;
-  --c-navy-700: 35 42 70;        /* dark surfaces */
-  --c-navy-800: 25 32 56;        /* card surface */
-  --c-navy-900: 15 21 41;        /* deepest backgrounds */
+  /* Inverted navy — text/icons brighten, backgrounds darken */
+  --c-navy:     230 234 245;
+  --c-navy-50:  35 44 70;
+  --c-navy-100: 45 56 92;
+  --c-navy-200: 70 88 130;
+  --c-navy-300: 130 145 190;
+  --c-navy-400: 165 180 215;     /* secondary text — readable on dark bg */
+  --c-navy-500: 195 208 232;
+  --c-navy-600: 215 225 240;
+  --c-navy-700: 38 48 80;        /* card surfaces */
+  --c-navy-800: 28 38 65;
+  --c-navy-900: 18 27 50;        /* deepest backgrounds */
 
-  /* Gold gets a touch lighter for contrast against dark backgrounds */
-  --c-gold:     219 188 87;      /* gold-400 territory */
+  /* Gold stays gold (it works on both backgrounds) */
+  --c-gold:     218 178 80;
   --c-gold-50:  60 50 25;
   --c-gold-100: 80 65 30;
 
-  /* Semantic tokens — dark mode */
-  --c-bg:        15 21 41;       /* deep navy page bg */
-  --c-fg:        230 234 245;    /* near-white text */
-  --c-surface:   25 32 56;       /* card */
-  --c-surface-2: 35 42 70;       /* nested surface */
-  --c-border:    45 55 92;
-  --c-muted:     145 158 200;
+  /* Slate */
+  --c-slate:    160 174 192;
+  --c-slate-300: 113 128 150;
+  --c-slate-400: 160 174 192;
+
+  /* Semantic — dark */
+  --c-bg:        14 22 42;       /* page bg */
+  --c-fg:        230 234 245;    /* default text */
+  --c-surface:   28 38 65;       /* CARD — clearly visible */
+  --c-surface-2: 38 48 80;       /* nested surfaces */
+  --c-border:    50 62 95;
+  --c-muted:     160 174 192;
+
+  /* Chart colors — properly visible in dark mode */
+  --c-chart-grid:       58 70 105;
+  --c-chart-text:       180 195 225;
+  --c-chart-tooltip-bg: 14 22 42;
+  --c-chart-tooltip-fg: 230 234 245;
 }
 
 /* ============================================================
-   GLOBAL BASE STYLES
+   GLOBAL BASE
    ============================================================ */
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-lato), system-ui, sans-serif;
   font-feature-settings: "kern", "liga", "calt";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: rgb(var(--c-bg));
+  color: rgb(var(--c-fg));
 }
 
-/* All headings use Poppins by default */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-poppins), system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
-/* Smooth color transitions when toggling dark mode */
 * {
   transition-property: background-color, border-color, color, fill, stroke;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ============================================================
-   FORM ELEMENTS — fix native inputs in dark mode
-   ============================================================ */
-input, select, textarea {
-  color-scheme: light;
-}
-.dark input,
-.dark select,
-.dark textarea {
-  color-scheme: dark;
-}
+input, select, textarea { color-scheme: light; }
+.dark input, .dark select, .dark textarea { color-scheme: dark; }
 
-/* Date pickers — fix the calendar icon being invisible in dark mode */
 .dark input[type="date"]::-webkit-calendar-picker-indicator,
 .dark input[type="time"]::-webkit-calendar-picker-indicator,
 .dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: invert(0.85);
 }
 
-/* ============================================================
-   SCROLLBARS — match the theme
-   ============================================================ */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: rgb(var(--c-bg));
-}
-::-webkit-scrollbar-thumb {
-  background: rgb(var(--c-border));
-  border-radius: 999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--c-muted));
-}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgb(var(--c-bg)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--c-border)); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--c-muted)); }
 
 /* ============================================================
-   ANIMATION CLASSES (preserved from existing code)
+   ANIMATIONS
    ============================================================ */
 .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
 .animate-fade-in    { animation: fadeIn 0.3s ease-out forwards; opacity: 0; }
@@ -157,12 +153,26 @@ input, select, textarea {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* Preserve existing utilities you may use */
+/* Loader pulse */
+@keyframes logoPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.06); opacity: 1; }
+}
+.animate-logo-pulse {
+  animation: logoPulse 1.6s ease-in-out infinite;
+}
+
+/* Loader caption fade-cycle */
+@keyframes captionCycle {
+  0%, 25%   { opacity: 1; transform: translateY(0); }
+  30%, 70%  { opacity: 0; transform: translateY(4px); }
+  75%, 100% { opacity: 1; transform: translateY(0); }
+}
+
 .btn-press { transition: transform 0.1s ease; }
 .btn-press:active { transform: scale(0.97); }

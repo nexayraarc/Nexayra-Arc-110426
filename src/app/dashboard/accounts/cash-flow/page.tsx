@@ -5,6 +5,7 @@ import { apiCall } from "@/lib/api-client";
 import { useRole } from "@/lib/use-role";
 import { fmtAED, fmtDate } from "@/lib/format";
 import { Plus, TrendingUp, TrendingDown, Wallet, Trash2, Pencil, Check, X } from "lucide-react";
+import Loader from "@/components/Loader";
 
 type Bank = { id: string; name: string; openingBalance: number; currentBalance: number };
 type Tx = { id: string; bankAccountId: string; amount: number; date: string; type: string; description: string };
@@ -60,7 +61,7 @@ export default function CashFlowPage() {
     setEditingId(null); load();
   };
 
-  if (loading) return <div className="w-6 h-6 border-[3px] border-navy border-t-transparent rounded-full animate-spin"/>;
+  if (loading) return <Loader fullScreen />;
 
   const inp = "w-full px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm placeholder:text-navy dark:text-white-300 dark:placeholder:text-navy dark:text-white";;
   const totalCash = banks.reduce((s,b)=>s+b.currentBalance,0);

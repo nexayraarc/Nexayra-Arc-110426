@@ -45,6 +45,15 @@ module.exports = {
           600: "rgb(var(--c-gold-600) / <alpha-value>)",
           700: "rgb(var(--c-gold-700) / <alpha-value>)",
         },
+        slate: {
+    DEFAULT: "rgb(var(--c-slate) / <alpha-value>)",
+    50:  "rgb(var(--c-slate-50) / <alpha-value>)",
+    100: "rgb(var(--c-slate-100) / <alpha-value>)",
+    200: "rgb(var(--c-slate-200) / <alpha-value>)",
+    300: "rgb(var(--c-slate-300) / <alpha-value>)",
+    400: "rgb(var(--c-slate-400) / <alpha-value>)",
+    500: "rgb(var(--c-slate-500) / <alpha-value>)",
+  },
         // Semantic tokens — use these instead of hardcoded white/navy where possible
         bg:        "rgb(var(--c-bg) / <alpha-value>)",
         fg:        "rgb(var(--c-fg) / <alpha-value>)",
