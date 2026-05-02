@@ -7,10 +7,11 @@ import { apiCall } from "@/lib/api-client";
 import { fmtAED } from "@/lib/format";
 import {
   Wrench, Plus, Search, MapPin, Calendar, DollarSign,
-  Edit3, Trash2, X, ArrowLeft, Activity, Package,
+  Edit3, Trash2, X, ArrowLeft, Activity, Package, ExternalLink,
 } from "lucide-react";
 import Loader from "@/components/Loader";
 import WelcomeBanner from "@/components/WelcomeBanner";
+import LocationCapture, { LocationData } from "@/components/LocationCapture";
 
 type Asset = {
   id: string;
@@ -22,6 +23,7 @@ type Asset = {
   currentValue: number;
   condition: string;
   currentLocation: string;
+  locationData?: LocationData | null;
   currentProjectId?: string | null;
   assignedTo?: string | null;
   notes?: string | null;
@@ -89,9 +91,7 @@ export default function AssetsPage() {
     return { totalValue, purchaseValue, onSite, inOffice, needsRepair };
   }, [assets]);
 
-  if (roleLoading || loading) {
-    return <Loader compact />;
-  }
+  if (roleLoading || loading) return <Loader compact />;
 
   const canEdit = ["admin", "accounts", "logistics"].includes(role || "");
 
@@ -109,6 +109,10 @@ export default function AssetsPage() {
         <ArrowLeft size={16} /> Back to Company Overview
       </Link>
 
+      {/* Welcome banner — full width row */}
+      <WelcomeBanner tagline="Track high-value tools and equipment with their current location and assigned projects." compact />
+
+      {/* Header row */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6 animate-fade-in-up">
         <div className="flex items-center gap-3">
           <Wrench size={24} className="text-gold" />
@@ -116,7 +120,6 @@ export default function AssetsPage() {
             <h1 className="font-display text-3xl font-bold text-navy dark:text-white">High-Value Assets</h1>
             <p className="text-navy-400 text-sm">Track expensive tools and equipment with current location & value.</p>
           </div>
-          <WelcomeBanner tagline="Track high-value tools and equipment with their current location and assigned projects." compact />
         </div>
         {canEdit && (
           <button onClick={() => { setEditing(null); setShowModal(true); }} className="flex items-center gap-2 px-5 py-2.5 bg-navy hover:bg-navy-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm">
@@ -181,7 +184,11 @@ export default function AssetsPage() {
             <tbody>
               {filtered.map((a) => {
                 const project = projects.find((p) => p.id === a.currentProjectId);
-                const conditionColor = a.condition === "Excellent" || a.condition === "Good" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400" : a.condition === "Fair" ? "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400" : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400";
+                const conditionColor = a.condition === "Excellent" || a.condition === "Good"
+                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400"
+                  : a.condition === "Fair"
+                    ? "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400"
+                    : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400";
                 return (
                   <tr key={a.id} className="border-t border-navy-50 dark:border-navy-700">
                     <td className="p-3">
@@ -191,6 +198,16 @@ export default function AssetsPage() {
                     <td className="p-3 text-navy dark:text-white">{a.category}</td>
                     <td className="p-3">
                       <p className="text-navy dark:text-white text-xs">{a.currentLocation}</p>
+                      {a.locationData && (
+                        <a
+                          href={`https://www.google.com/maps?q=${a.locationData.lat},${a.locationData.lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-gold hover:text-gold-600 text-[10px] font-semibold mt-0.5"
+                        >
+                          <MapPin size={9} /> GPS <ExternalLink size={8} />
+                        </a>
+                      )}
                       {project && <p className="text-[10px] text-gold font-bold">{project.code || project.name}</p>}
                       {a.assignedTo && <p className="text-[10px] text-navy-400">→ {a.assignedTo}</p>}
                     </td>
@@ -230,6 +247,7 @@ function AssetModal({ asset, projects, onClose, onSaved }: { asset: Asset | null
     currentValue: asset?.currentValue ?? 0,
     condition: asset?.condition || "Good",
     currentLocation: asset?.currentLocation || "Office",
+    locationData: asset?.locationData || null,
     currentProjectId: asset?.currentProjectId || "",
     assignedTo: asset?.assignedTo || "",
     notes: asset?.notes || "",
@@ -238,21 +256,23 @@ function AssetModal({ asset, projects, onClose, onSaved }: { asset: Asset | null
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-  if (!form.name.trim()) return setError("Name is required.");
-  if (!form.category || !form.category.trim()) return setError("Category is required.");
-  setSaving(true);
-  setError("");
-  try {
-    const payload = { ...form, currentProjectId: form.currentProjectId || null };
-    if (asset) await apiCall("/api/assets", { method: "PATCH", body: { id: asset.id, ...payload } });
-    else await apiCall("/api/assets", { method: "POST", body: payload });
-    onSaved();
-  } catch (err: any) {
-    setError(err.message);
-  } finally {
-    setSaving(false);
-  }
-};
+    if (!form.name.trim()) return setError("Name is required.");
+    if (!form.category || !form.category.trim()) return setError("Category is required.");
+    setSaving(true);
+    setError("");
+    try {
+      const payload = { ...form, currentProjectId: form.currentProjectId || null };
+      if (asset) await apiCall("/api/assets", { method: "PATCH", body: { id: asset.id, ...payload } });
+      else await apiCall("/api/assets", { method: "POST", body: payload });
+      onSaved();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inp = "w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white";
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -265,61 +285,69 @@ function AssetModal({ asset, projects, onClose, onSaved }: { asset: Asset | null
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Name *</label>
-              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white" />
+              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inp} />
             </div>
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Category</label>
-              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white">
+              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inp}>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
           <div>
             <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Serial Number</label>
-            <input value={form.serialNumber} onChange={(e) => setForm({ ...form, serialNumber: e.target.value })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white font-mono" />
+            <input value={form.serialNumber} onChange={(e) => setForm({ ...form, serialNumber: e.target.value })} className={`${inp} font-mono`} />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Purchase Date</label>
-              <input type="date" value={form.purchaseDate} onChange={(e) => setForm({ ...form, purchaseDate: e.target.value })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white" />
+              <input type="date" value={form.purchaseDate} onChange={(e) => setForm({ ...form, purchaseDate: e.target.value })} className={inp} />
             </div>
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Purchase (AED)</label>
-              <input type="number" value={form.purchaseValue} onChange={(e) => setForm({ ...form, purchaseValue: Number(e.target.value) })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white" />
+              <input type="number" value={form.purchaseValue} onChange={(e) => setForm({ ...form, purchaseValue: Number(e.target.value) })} className={inp} />
             </div>
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Current (AED)</label>
-              <input type="number" value={form.currentValue} onChange={(e) => setForm({ ...form, currentValue: Number(e.target.value) })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white" />
+              <input type="number" value={form.currentValue} onChange={(e) => setForm({ ...form, currentValue: Number(e.target.value) })} className={inp} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Condition</label>
-              <select value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white">
+              <select value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })} className={inp}>
                 {CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Assigned To</label>
-              <input value={form.assignedTo} onChange={(e) => setForm({ ...form, assignedTo: e.target.value })} placeholder="Person name" className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white" />
+              <input value={form.assignedTo} onChange={(e) => setForm({ ...form, assignedTo: e.target.value })} placeholder="Person name" className={inp} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Current Location</label>
-              <input value={form.currentLocation} onChange={(e) => setForm({ ...form, currentLocation: e.target.value })} placeholder="Office / Site / Storage" className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white" />
+              <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Location Description</label>
+              <input value={form.currentLocation} onChange={(e) => setForm({ ...form, currentLocation: e.target.value })} placeholder="Office / Site / Storage" className={inp} />
             </div>
             <div>
               <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Project (if on-site)</label>
-              <select value={form.currentProjectId} onChange={(e) => setForm({ ...form, currentProjectId: e.target.value })} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white">
+              <select value={form.currentProjectId} onChange={(e) => setForm({ ...form, currentProjectId: e.target.value })} className={inp}>
                 <option value="">— None —</option>
                 {projects.map((p) => <option key={p.id} value={p.id}>{p.code || p.name}</option>)}
               </select>
             </div>
           </div>
+
+          {/* GPS location capture */}
+          <LocationCapture
+            value={form.locationData}
+            onChange={(loc) => setForm({ ...form, locationData: loc })}
+            label="GPS Location (optional)"
+          />
+
           <div>
             <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Notes</label>
-            <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white resize-none" />
+            <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inp} resize-none`} />
           </div>
         </div>
         {error && <p className="text-red-600 text-sm mt-3 bg-red-50 p-3 rounded-xl">{error}</p>}
@@ -336,6 +364,7 @@ function AssetModal({ asset, projects, onClose, onSaved }: { asset: Asset | null
 
 function ScanModal({ asset, projects, onClose, onScanned }: { asset: Asset; projects: Project[]; onClose: () => void; onScanned: () => void }) {
   const [location, setLocation] = useState(asset.currentLocation);
+  const [locationData, setLocationData] = useState<LocationData | null>(asset.locationData || null);
   const [projectId, setProjectId] = useState(asset.currentProjectId || "");
   const [saving, setSaving] = useState(false);
 
@@ -344,15 +373,22 @@ function ScanModal({ asset, projects, onClose, onScanned }: { asset: Asset; proj
     try {
       await apiCall("/api/assets", {
         method: "PATCH",
-        body: JSON.stringify({ id: asset.id, scanLocation: location, currentProjectId: projectId || null }),
+        body: {
+          id: asset.id,
+          scanLocation: location,
+          locationData,
+          currentProjectId: projectId || null,
+        },
       });
       onScanned();
     } catch (err: any) { alert("Scan failed: " + err.message); } finally { setSaving(false); }
   };
 
+  const inp = "w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white";
+
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-navy-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div className="bg-white dark:bg-navy-800 rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-xl font-bold text-navy dark:text-white">📍 Scan Asset</h2>
           <button onClick={onClose}><X size={18} className="text-navy-400" /></button>
@@ -361,15 +397,21 @@ function ScanModal({ asset, projects, onClose, onScanned }: { asset: Asset; proj
         <div className="space-y-3">
           <div>
             <label className="text-xs font-bold text-navy-400 uppercase block mb-1">New Location *</label>
-            <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Site A, Storeroom 2" className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white" />
+            <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Site A, Storeroom 2" className={inp} />
           </div>
           <div>
             <label className="text-xs font-bold text-navy-400 uppercase block mb-1">Project (optional)</label>
-            <select value={projectId} onChange={(e) => setProjectId(e.target.value)} className="w-full px-3 py-2 bg-navy-50 dark:bg-navy-700 border border-navy-100 dark:border-navy-600 rounded-xl text-sm text-navy dark:text-white">
+            <select value={projectId} onChange={(e) => setProjectId(e.target.value)} className={inp}>
               <option value="">— None —</option>
               {projects.map((p) => <option key={p.id} value={p.id}>{p.code || p.name}</option>)}
             </select>
           </div>
+
+          <LocationCapture
+            value={locationData}
+            onChange={setLocationData}
+            label="GPS (optional)"
+          />
         </div>
         <div className="flex gap-2 mt-4">
           <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-navy-50 dark:bg-navy-700 text-navy dark:text-white rounded-xl font-semibold text-sm">Cancel</button>
