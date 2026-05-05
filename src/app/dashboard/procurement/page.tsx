@@ -62,7 +62,7 @@ export default function ProcurementDashboard() {
       <WelcomeBanner tagline="Streamline purchasing, manage vendors, and control project costs." />
       <ModuleSearchBar module="procurement" placeholder="Search LPOs, vendors…" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5 hover-lift">
+        <div className="bg-brand-navy text-white rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><ShoppingCart size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total LPOs</p></div>
           <p className="text-2xl font-bold">{kpis.total}</p>
         </div>
@@ -100,9 +100,9 @@ export default function ProcurementDashboard() {
           <h3 className="font-lato text-lg font-bold text-navy dark:text-white mb-4">LPOs by Month ({new Date().getFullYear()})</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={monthly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-              <XAxis dataKey="month" style={{ fontSize: "11px" }}/>
-              <YAxis style={{ fontSize: "11px" }}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }}/>
+              <YAxis tick={{ fontSize: 11, fill: t.axisText }}/>
               <Tooltip/>
               <Bar dataKey="count" fill="#1c2143" name="LPOs" radius={[4,4,0,0]}/>
             </BarChart>

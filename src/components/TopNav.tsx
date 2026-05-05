@@ -27,7 +27,7 @@ export default function TopNav() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href={isMainAccessible ? "/dashboard" : "#"} className="flex items-center gap-3 group">
-            <img src="/nexayra.png" alt="Nexayra Arc" className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+            <img src="/nexayra.png" alt="Nexayra Arc" className="h-9 w-auto transition-all duration-300 group-hover:scale-105 dark:brightness-0 dark:invert"
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
           </Link>
 
@@ -35,7 +35,7 @@ export default function TopNav() {
             {isMainAccessible && (
               <Link
   href="/dashboard"
-  className="group relative w-10 h-10 rounded-xl bg-gradient-to-br from-navy to-navy-700 hover:from-gold hover:to-gold-500 flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105"
+  className="group relative w-10 h-10 rounded-xl bg-brand-navy hover:bg-gold flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105"
   aria-label="Dashboard home"
 >
   <LayoutGrid size={18} className="text-white group-hover:text-navy transition-colors" />

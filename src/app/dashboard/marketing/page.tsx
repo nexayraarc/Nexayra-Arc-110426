@@ -199,12 +199,12 @@ export default function MarketingPage() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         {[
-          { label: "Scheduled This Week",    value: kpis.scheduledThisWeek,           icon: Calendar,   color: "from-navy to-navy-700" },
+          { label: "Scheduled This Week",    value: kpis.scheduledThisWeek,           icon: Calendar,   color: "", brand: true },
           { label: "Total Brand Assets",     value: kpis.totalAssets,                  icon: ImageIcon,  color: "from-emerald-600 to-emerald-700" },
           { label: "Top Platform (Month)",   value: kpis.topPlatform ? PLATFORM_META[kpis.topPlatform].label : "—", icon: TrendingUp, color: "from-gold to-gold-600", text: "text-navy" },
           { label: "AI Drafts Pending",      value: kpis.aiDraftsPending,              icon: Sparkles,   color: "from-purple-600 to-purple-700" },
         ].map((k, i) => (
-          <div key={k.label} className={`bg-gradient-to-br ${k.color} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`} style={{ animationDelay: `${i * 0.05}s` }}>
+          <div key={k.label} className={`${(k as any).brand ? "bg-brand-navy" : `bg-gradient-to-br ${k.color}`} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`} style={{ animationDelay: `${i * 0.05}s` }}>
             <k.icon size={18} className="opacity-80 mb-2" />
             <p className="text-xs font-bold uppercase opacity-80">{k.label}</p>
             <p className="text-lg font-bold mt-1 truncate">{k.value}</p>

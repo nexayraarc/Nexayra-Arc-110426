@@ -221,7 +221,7 @@ export default function ProjectsPage() {
       {/* KPI strip */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
         {[
-          { label: "Total Projects", value: projects.length, icon: Briefcase, color: "from-navy to-navy-700", text: "text-white" },
+          { label: "Total Projects", value: projects.length, icon: Briefcase, color: "", text: "text-white", brand: true },
           { label: "Active", value: stats.active, icon: TrendingUp, color: "from-gold to-gold-500", text: "text-navy" },
           { label: "Contract Value", value: fmtAED(stats.totalContract), icon: DollarSign, color: "from-teal-600 to-teal-700", text: "text-white" },
           { label: "Total Billed", value: fmtAED(stats.totalBilled), icon: CheckCircle2, color: "from-indigo-600 to-indigo-700", text: "text-white" },
@@ -229,7 +229,7 @@ export default function ProjectsPage() {
           { label: "Outstanding", value: fmtAED(stats.outstanding), icon: AlertTriangle, color: "from-rose-600 to-rose-700", text: "text-white" },
         ].map((k, i) => (
           <div key={k.label}
-            className={`bg-gradient-to-br ${k.color} ${k.text} rounded-2xl p-4 shadow-sm animate-fade-in-up`}
+            className={`${(k as any).brand ? "bg-brand-navy" : `bg-gradient-to-br ${k.color}`} ${k.text} rounded-2xl p-4 shadow-sm animate-fade-in-up`}
             style={{ animationDelay: `${i * 0.05}s` }}>
             <div className="flex items-center justify-between mb-2">
               <k.icon size={18} className="opacity-80" />
@@ -256,7 +256,7 @@ export default function ProjectsPage() {
                     <Cell key={entry.name} fill={STATUS_COLORS[entry.name] || "#888"} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} />
+                <Tooltip contentStyle={t.tooltipStyle} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
@@ -276,7 +276,7 @@ export default function ProjectsPage() {
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: t.axisText }} />
                 <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip
-                  contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
+                  contentStyle={t.tooltipStyle}
                   formatter={(v: number) => fmtAED(v)} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Bar dataKey="contract" fill="#1c2143" name="Contract" radius={[4, 4, 0, 0]} />
@@ -301,7 +301,7 @@ export default function ProjectsPage() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
+                  contentStyle={t.tooltipStyle}
                   formatter={(v: number) => fmtAED(v)} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
               </PieChart>
@@ -333,7 +333,7 @@ export default function ProjectsPage() {
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }} />
               <YAxis tick={{ fontSize: 11, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <Tooltip
-                contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }}
+                contentStyle={t.tooltipStyle}
                 formatter={(v: number) => fmtAED(v)} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Area type="monotone" dataKey="billed" stroke="#1c2143" strokeWidth={2} fill="url(#billedGrad)" name="Billed" />

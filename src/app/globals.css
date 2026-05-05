@@ -176,3 +176,96 @@ input, select, textarea { color-scheme: light; }
 
 .btn-press { transition: transform 0.1s ease; }
 .btn-press:active { transform: scale(0.97); }
+
+/* ============================================================
+   BRAND NAVY UTILITY
+   Stays the same deep navy in both light and dark mode.
+   Use for elements (welcome banner, hero cards, brand chips)
+   that should always look like the brand navy regardless of theme.
+   ============================================================ */
+.bg-brand-navy {
+  background-color: rgb(25 42 86);
+  color: rgb(255 255 255);
+}
+
+/* ============================================================
+   DARK MODE BLANKET FIXES
+   These rules catch common patterns where developers used
+   `bg-white` or `text-navy` without the `dark:` variant.
+   They are scoped to the `.dark` class only, so light mode
+   is unaffected.
+   ============================================================ */
+
+/* Plain `bg-white` becomes the dark surface in dark mode */
+.dark .bg-white:not(.bg-brand-navy):not([class*="bg-gradient"]) {
+  background-color: rgb(var(--c-surface));
+}
+
+/* Plain `text-navy` (with no `dark:` override) becomes light in dark mode */
+.dark .text-navy:not([class*="dark:text"]) {
+  color: rgb(var(--c-fg));
+}
+
+/* Raw input/select/textarea elements with no explicit dark styling */
+.dark input:not([class*="bg-"]):not([class*="dark:bg"]),
+.dark select:not([class*="bg-"]):not([class*="dark:bg"]),
+.dark textarea:not([class*="bg-"]):not([class*="dark:bg"]) {
+  background-color: rgb(var(--c-surface-2));
+  color: rgb(var(--c-fg));
+  border-color: rgb(var(--c-border));
+}
+
+/* Inputs that DO use bg-white explicitly — flip them */
+.dark input.bg-white,
+.dark select.bg-white,
+.dark textarea.bg-white {
+  background-color: rgb(var(--c-surface-2)) !important;
+  color: rgb(var(--c-fg)) !important;
+}
+
+/* Tables in dark mode — make sure rows are readable */
+.dark table tbody tr {
+  border-color: rgb(var(--c-border) / 0.5);
+}
+.dark table thead {
+  background-color: rgb(var(--c-surface-2));
+}
+
+/* Borders that use `border-navy-100` without a dark variant */
+.dark .border-navy-100:not([class*="dark:border"]) {
+  border-color: rgb(var(--c-border));
+}
+
+/* Hover states on white backgrounds */
+.dark .hover\:bg-navy-50:hover:not([class*="dark:hover"]) {
+  background-color: rgb(var(--c-surface-2));
+}
+
+/* Recharts SVG text — global override for any chart we haven't migrated yet */
+.dark .recharts-cartesian-axis-tick text,
+.dark .recharts-legend-item-text,
+.dark .recharts-text {
+  fill: rgb(var(--c-chart-text)) !important;
+}
+
+.dark .recharts-cartesian-grid line,
+.dark .recharts-cartesian-axis line {
+  stroke: rgb(var(--c-chart-grid)) !important;
+}
+
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: rgb(var(--c-chart-tooltip-bg)) !important;
+  border-color: rgb(var(--c-border)) !important;
+  color: rgb(var(--c-chart-tooltip-fg)) !important;
+}
+
+/* Generic placeholder color in dark mode */
+.dark ::placeholder {
+  color: rgb(var(--c-muted) / 0.7);
+}
+
+/* Modal/dialog white backgrounds */
+.dark .bg-white\/95,
+.dark .bg-white\/90 {
+  background-color: rgb(var(--c-surface) / 0.95);
+}

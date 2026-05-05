@@ -110,7 +110,7 @@ export default function ProfitLossPage() {
           <p className="text-2xl font-bold">{fmtAED(totals.expenses)}</p>
           <p className="text-white/80 text-xs mt-1">Company: {fmtAED(totals.companyExp)} · Project: {fmtAED(totals.projectExp)}</p>
         </div>
-        <div className={`bg-gradient-to-br ${totals.profit >= 0 ? "from-navy to-navy-700" : "from-red-600 to-red-800"} text-white rounded-2xl p-5 hover-lift`}>
+        <div className={`${totals.profit >= 0 ? "bg-brand-navy" : "bg-gradient-to-br from-red-600 to-red-800"} text-white rounded-2xl p-5 hover-lift`}>
           <div className="flex items-center gap-2 mb-2"><Target size={16}/><p className="text-white/80 text-xs uppercase font-bold tracking-wider">Net Profit / Loss</p></div>
           <p className="text-2xl font-bold">{fmtAED(totals.profit)}</p>
         </div>
@@ -141,9 +141,9 @@ export default function ProfitLossPage() {
           <h3 className="text-navy dark:text-white font-lato-semibold text-sm mb-3">Revenue vs Expenses</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={periods}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-              <XAxis dataKey="label" style={{ fontSize: "11px" }}/>
-              <YAxis style={{ fontSize: "11px" }}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+              <XAxis dataKey="label" tick={{ fontSize: 11, fill: t.axisText }}/>
+              <YAxis tick={{ fontSize: 11, fill: t.axisText }}/>
               <Tooltip formatter={(v: number) => fmtAED(v)}/>
               <Legend wrapperStyle={{ fontSize: "12px" }}/>
               <Bar dataKey="revenue" fill="#0f766e" name="Revenue" radius={[4,4,0,0]}/>
@@ -164,9 +164,9 @@ export default function ProfitLossPage() {
                   <stop offset="100%" stopColor="#c9a84c" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-              <XAxis dataKey="label" style={{ fontSize: "11px" }}/>
-              <YAxis style={{ fontSize: "11px" }}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+              <XAxis dataKey="label" tick={{ fontSize: 11, fill: t.axisText }}/>
+              <YAxis tick={{ fontSize: 11, fill: t.axisText }}/>
               <Tooltip formatter={(v: number) => fmtAED(v)}/>
               <Area type="monotone" dataKey="profit" stroke="#c9a84c" strokeWidth={3} fill="url(#profitGrad)" name="Profit"/>
             </AreaChart>
@@ -217,9 +217,9 @@ export default function ProfitLossPage() {
           <h2 className="font-lato text-navy dark:text-white text-lg font-bold mb-4">Top Projects — Contract Value vs Expenses</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={projectProfitability} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-              <XAxis type="number" style={{ fontSize: "11px" }}/>
-              <YAxis dataKey="name" type="category" width={150} style={{ fontSize: "11px" }}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+              <XAxis type="number" tick={{ fontSize: 11, fill: t.axisText }}/>
+              <YAxis dataKey="name" type="category" width={150} tick={{ fontSize: 11, fill: t.axisText }}/>
               <Tooltip formatter={(v: number) => fmtAED(v)}/>
               <Legend wrapperStyle={{ fontSize: "12px" }}/>
               <Bar dataKey="contractValue" fill="#1c2143" name="Contract Value" radius={[0,4,4,0]}/>

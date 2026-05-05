@@ -415,10 +415,10 @@ export default function CompanyOverviewPage() {
         {[
           { label: "Cash on Hand", value: fmtAED(cashOnHand), icon: Wallet, color: "from-emerald-600 to-emerald-700" },
           { label: "Runway (3mo burn)", value: `${runwayDisplay} months`, icon: Clock, color: runwayMonths < 3 ? "from-rose-600 to-rose-700" : runwayMonths < 6 ? "from-amber-600 to-amber-700" : "from-teal-600 to-teal-700" },
-          { label: "Win Rate (Quarter)", value: `${winRatePct}%`, icon: CheckCircle2, color: "from-navy to-navy-700" },
+          { label: "Win Rate (Quarter)", value: `${winRatePct}%`, icon: CheckCircle2, color: "", brand: true },
           { label: "Active Pipeline", value: fmtAED(pipelineValue), icon: TrendingUp, color: "from-gold to-gold-500", text: "text-navy" },
         ].map((k, i) => (
-          <div key={k.label} className={`bg-gradient-to-br ${k.color} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`} style={{ animationDelay: `${i * 0.05}s` }}>
+          <div key={k.label} className={`${(k as any).brand ? "bg-brand-navy" : `bg-gradient-to-br ${k.color}`} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`} style={{ animationDelay: `${i * 0.05}s` }}>
             <k.icon size={18} className="opacity-80 mb-2" />
             <p className="text-xs font-bold uppercase opacity-80">{k.label}</p>
             <p className="text-lg font-bold mt-1 truncate">{k.value}</p>
@@ -427,7 +427,7 @@ export default function CompanyOverviewPage() {
       </div>
 
       {/* Executive Briefing */}
-      <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-5 mb-5 text-white relative overflow-hidden animate-fade-in-up delay-1">
+      <div className="bg-brand-navy rounded-2xl p-5 mb-5 text-white relative overflow-hidden animate-fade-in-up delay-1">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gold/10 rounded-full -translate-y-1/2 translate-x-1/3" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-3">
@@ -452,7 +452,7 @@ export default function CompanyOverviewPage() {
       {/* Module shortcut cards (Vault, Brand, Contacts, Assets, Audit) */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
         <Link href="/dashboard/company-overview/vault"
-          className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5 shadow-sm hover:scale-[1.01] transition-all animate-fade-in-up">
+          className="bg-brand-navy text-white rounded-2xl p-5 shadow-sm hover:scale-[1.01] transition-all animate-fade-in-up">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center"><Shield size={20} className="text-gold" /></div>
             <h3 className="font-display text-base font-bold">Corporate Vault</h3>
@@ -531,7 +531,7 @@ export default function CompanyOverviewPage() {
                 <Pie data={winLossData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3} dataKey="value" stroke="none">
                   {winLossData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                 </Pie>
-                <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} />
+                <Tooltip contentStyle={t.tooltipStyle} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
               </PieChart>
             </ResponsiveContainer>
@@ -550,7 +550,7 @@ export default function CompanyOverviewPage() {
               <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
               <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: t.axisText }} width={100} />
-              <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} formatter={(v: number) => fmtAED(v)} />
+              <Tooltip contentStyle={t.tooltipStyle} formatter={(v: number) => fmtAED(v)} />
               <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                 {pipelineData.map((d, i) => <Cell key={i} fill={d.fill} />)}
               </Bar>
@@ -593,7 +593,7 @@ export default function CompanyOverviewPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke={t.grid} horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
                 <YAxis type="category" dataKey="dept" tick={{ fontSize: 11, fill: t.axisText }} width={120} />
-                <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} />
+                <Tooltip contentStyle={t.tooltipStyle} />
                 <Bar dataKey="count" radius={[0, 6, 6, 0]}>
                   {deptData.map((_, i) => <Cell key={i} fill={DEPT_COLORS[i % DEPT_COLORS.length]} />)}
                 </Bar>
