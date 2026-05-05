@@ -462,3 +462,81 @@ a, button {
 .bg-brand-navy:hover {
   background: linear-gradient(135deg, #1F3470 0%, #142457 100%) !important;
 }
+/* ============================================================
+   DARK MODE COMPREHENSIVE FIXES
+   ============================================================ */
+
+.dark .bg-white:not(.bg-brand-navy):not([class*="bg-gradient"]) {
+  background-color: rgb(var(--c-surface)) !important;
+}
+
+.dark .text-navy:not([class*="dark:text"]) {
+  color: rgb(var(--c-fg)) !important;
+}
+
+.dark input.bg-white,
+.dark select.bg-white,
+.dark textarea.bg-white,
+.dark input.bg-navy-50,
+.dark select.bg-navy-50,
+.dark textarea.bg-navy-50 {
+  background-color: rgb(var(--c-surface-2)) !important;
+  color: rgb(var(--c-fg)) !important;
+  border-color: rgb(var(--c-border)) !important;
+}
+
+.dark input:not([class*="bg-"]),
+.dark select:not([class*="bg-"]),
+.dark textarea:not([class*="bg-"]) {
+  background-color: rgb(var(--c-surface-2));
+  color: rgb(var(--c-fg));
+  border-color: rgb(var(--c-border));
+}
+
+.dark table thead {
+  background-color: rgb(var(--c-surface-2));
+}
+.dark table tbody tr {
+  border-color: rgb(var(--c-border) / 0.5);
+}
+
+.dark .border-navy-100:not([class*="dark:border"]) {
+  border-color: rgb(var(--c-border));
+}
+.dark .border-navy-50:not([class*="dark:border"]) {
+  border-color: rgb(var(--c-border) / 0.6);
+}
+
+.dark .hover\:bg-navy-50:hover:not([class*="dark:hover"]) {
+  background-color: rgb(var(--c-surface-2));
+}
+
+.dark .recharts-cartesian-axis-tick text,
+.dark .recharts-legend-item-text,
+.dark .recharts-text {
+  fill: rgb(var(--c-chart-text)) !important;
+}
+
+.dark .recharts-cartesian-grid line,
+.dark .recharts-cartesian-axis line {
+  stroke: rgb(var(--c-chart-grid)) !important;
+}
+
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: rgb(var(--c-chart-tooltip-bg)) !important;
+  border-color: rgb(var(--c-border)) !important;
+  color: rgb(var(--c-chart-tooltip-fg)) !important;
+}
+
+.dark ::placeholder {
+  color: rgb(var(--c-muted) / 0.7) !important;
+}
+
+.dark .bg-white\/95,
+.dark .bg-white\/90 {
+  background-color: rgb(var(--c-surface) / 0.95) !important;
+}
+
+.dark img[alt="Nexayra Arc"]:not([src*="-light"]) {
+  filter: brightness(0) invert(1);
+}
