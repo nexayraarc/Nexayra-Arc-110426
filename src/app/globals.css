@@ -176,3 +176,289 @@ input, select, textarea { color-scheme: light; }
 
 .btn-press { transition: transform 0.1s ease; }
 .btn-press:active { transform: scale(0.97); }
+/* ============================================================
+   POLISH — subtle effects that elevate the whole app
+   ============================================================ */
+
+/* Smoother rounded element shadows in dark mode */
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 0 rgb(0 0 0 / 0.2);
+}
+.dark .shadow {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+}
+.dark .shadow-md {
+  box-shadow: 0 4px 8px -2px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+}
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+/* Card "lift on hover" — universal, very subtle */
+.card-lift {
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(25, 42, 86, 0.15);
+}
+.dark .card-lift:hover {
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Glass effect for modals and overlays */
+.glass {
+  backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.dark .glass {
+  background: rgba(28, 38, 65, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Smooth focus rings — replaces default ugly outlines */
+*:focus-visible {
+  outline: 2px solid rgb(var(--c-gold));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: none;
+}
+
+/* Premium gold accent gradient text — use sparingly for headings */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #C6A35E 0%, #E8C46E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtle "shimmer" loading effect for skeleton loaders */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Smoother scroll on links/buttons */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better text rendering everywhere */
+* {
+  text-rendering: optimizeLegibility;
+}
+
+/* Hairline borders feel premium — slightly muted in light mode */
+.border-hairline {
+  border-color: rgb(var(--c-border) / 0.6);
+}
+
+/* Subtle slide-in for modals */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); } 
+}
+.animate-modal-in {
+  animation: modalIn 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Modal backdrop with proper blur */
+.modal-backdrop {
+  background: rgba(15, 21, 41, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+/* Subtle pulse on KPI changes */
+@keyframes kpiPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+.animate-kpi-pulse {
+  animation: kpiPulse 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Premium spring animation curve */
+.transition-spring {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================================
+   POLISH — subtle effects that elevate the whole app
+   ============================================================ */
+
+/* Better shadows in dark mode (default Tailwind shadows are too faint on dark bg) */
+.dark .shadow-sm  { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.35), 0 1px 3px 0 rgb(0 0 0 / 0.2); }
+.dark .shadow     { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3); }
+.dark .shadow-md  { box-shadow: 0 4px 8px -2px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.3); }
+.dark .shadow-lg  { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3); }
+.dark .shadow-xl  { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4); }
+
+/* Universal card "lift" hover effect — apply anywhere */
+.card-lift {
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(25, 42, 86, 0.15);
+}
+.dark .card-lift:hover {
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Glass morphism for modals and overlays */
+.glass {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.dark .glass {
+  background: rgba(28, 38, 65, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Smooth gold focus rings — replaces ugly browser defaults */
+*:focus-visible {
+  outline: 2px solid rgb(var(--c-gold));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: none;
+}
+
+/* Premium gold gradient text — for hero numbers / accents */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #C6A35E 0%, #E8C46E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Premium navy gradient text */
+.text-gradient-navy {
+  background: linear-gradient(135deg, #192A56 0%, #2A3F7C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.dark .text-gradient-navy {
+  background: linear-gradient(135deg, #E6EAF5 0%, #C8D2E8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Shimmer loading animation */
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Modal entry animation */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-modal-in {
+  animation: modalIn 220ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Modal backdrop with proper blur */
+.modal-backdrop {
+  background: rgba(15, 21, 41, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* KPI value pulse for live updates */
+@keyframes kpiPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+.animate-kpi-pulse {
+  animation: kpiPulse 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Premium "spring" easing curve */
+.transition-spring {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Hairline border (slightly muted) */
+.border-hairline {
+  border-color: rgb(var(--c-border) / 0.6);
+}
+
+/* Better tap behavior on mobile — no ugly highlight */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Optimize text rendering app-wide */
+* {
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle "noise" texture utility — adds depth to large flat surfaces */
+.bg-noise {
+  position: relative;
+}
+.bg-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Slightly nicer scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--c-bg));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-border));
+  border-radius: 999px;
+  border: 2px solid rgb(var(--c-bg));
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-muted));
+}
+/* ============================================================
+   Brand "Deep Navy" gradient — consistent across light & dark mode
+   Use the .bg-brand-navy utility on any element that should
+   match the welcome banner's deep navy look in both modes.
+   ============================================================ */
+.bg-brand-navy {
+  background: linear-gradient(135deg, #192A56 0%, #0F1B3D 100%) !important;
+  color: white;
+}
+.bg-brand-navy:hover {
+  background: linear-gradient(135deg, #1F3470 0%, #142457 100%) !important;
+}
