@@ -411,23 +411,26 @@ export default function CompanyOverviewPage() {
       <ModuleSearchBar module="company-overview" placeholder="Search company data…" />
 
       {/* Hero KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-        {[
-          { label: "Cash on Hand", value: fmtAED(cashOnHand), icon: Wallet, color: "from-emerald-600 to-emerald-700" },
-          { label: "Runway (3mo burn)", value: `${runwayDisplay} months`, icon: Clock, color: runwayMonths < 3 ? "from-rose-600 to-rose-700" : runwayMonths < 6 ? "from-amber-600 to-amber-700" : "from-teal-600 to-teal-700" },
-          { label: "Win Rate (Quarter)", value: `${winRatePct}%`, icon: CheckCircle2, color: "from-navy to-navy-700" },
-          { label: "Active Pipeline", value: fmtAED(pipelineValue), icon: TrendingUp, color: "from-gold to-gold-500", text: "text-navy" },
-        ].map((k, i) => (
-          <div key={k.label} className={`bg-gradient-to-br ${k.color} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`} style={{ animationDelay: `${i * 0.05}s` }}>
-            <k.icon size={18} className="opacity-80 mb-2" />
-            <p className="text-xs font-bold uppercase opacity-80">{k.label}</p>
-            <p className="text-lg font-bold mt-1 truncate">{k.value}</p>
-          </div>
-        ))}
-      </div>
-
+<div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+  {[
+    { label: "Cash on Hand",         value: fmtAED(cashOnHand),                                                   icon: Wallet,        color: "from-emerald-600 to-emerald-700" },
+    { label: "Runway (3mo burn)",    value: `${runwayDisplay} months`,                                            icon: Clock,         color: runwayMonths < 3 ? "from-rose-600 to-rose-700" : runwayMonths < 6 ? "from-amber-600 to-amber-700" : "from-teal-600 to-teal-700" },
+    { label: "Win Rate (Quarter)",   value: `${winRatePct}%`,                                                     icon: CheckCircle2,  brand: true },
+    { label: "Active Pipeline",      value: fmtAED(pipelineValue),                                                icon: TrendingUp,    color: "from-gold to-gold-500", text: "text-navy" },
+  ].map((k, i) => (
+    <div
+      key={k.label}
+      className={`${(k as any).brand ? "bg-brand-navy" : `bg-gradient-to-br ${k.color}`} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`}
+      style={{ animationDelay: `${i * 0.05}s` }}
+    >
+      <k.icon size={18} className="opacity-80 mb-2" />
+      <p className="text-xs font-bold uppercase opacity-80">{k.label}</p>
+      <p className="text-lg font-bold mt-1 truncate">{k.value}</p>
+    </div>
+  ))}
+</div>
       {/* Executive Briefing */}
-      <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-5 mb-5 text-white relative overflow-hidden animate-fade-in-up delay-1">
+      <div className="bg-brand-navy rounded-2xl p-5 mb-5 text-white relative overflow-hidden animate-fade-in-up delay-1 shadow-md">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gold/10 rounded-full -translate-y-1/2 translate-x-1/3" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-3">
@@ -452,7 +455,7 @@ export default function CompanyOverviewPage() {
       {/* Module shortcut cards (Vault, Brand, Contacts, Assets, Audit) */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
         <Link href="/dashboard/company-overview/vault"
-          className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5 shadow-sm hover:scale-[1.01] transition-all animate-fade-in-up">
+  className="bg-brand-navy text-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all animate-fade-in-up">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center"><Shield size={20} className="text-gold" /></div>
             <h3 className="font-display text-base font-bold">Corporate Vault</h3>

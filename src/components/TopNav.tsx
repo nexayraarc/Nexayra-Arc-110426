@@ -33,10 +33,12 @@ export default function TopNav() {
 
           <div className="flex items-center gap-3">
             {isMainAccessible && (
-              <Link
+             <Link
   href="/dashboard"
-  className="group relative w-10 h-10 rounded-xl bg-gradient-to-br from-navy to-navy-700 hover:from-gold hover:to-gold-500 flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105"
+  className="group relative w-10 h-10 rounded-xl bg-brand-navy flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105"
   aria-label="Dashboard home"
+  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#C6A35E'; }}
+  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ''; }}
 >
   <LayoutGrid size={18} className="text-white group-hover:text-navy transition-colors" />
 </Link>

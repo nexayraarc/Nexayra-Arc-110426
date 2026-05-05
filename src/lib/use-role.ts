@@ -28,7 +28,7 @@ export function useRole() {
     canWrite: role === "admin" || role === "accounts",
     canWriteAccounts: role === "admin" || role === "accounts",
     canWriteProcurement: role === "admin" || role === "procurement" || role === "procurement-approver",
-    canApproveLpo: role === "admin" || role === "procurement-approver",
+    canApproveLpo: role === "procurement-approver",
     canWriteEstimation: role === "admin" || role === "estimation",
     canWriteLogistics: role === "admin" || role === "logistics",
     canWriteHR: role === "admin" || role === "hr",

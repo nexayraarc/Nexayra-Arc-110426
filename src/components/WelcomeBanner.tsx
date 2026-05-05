@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 
 type WelcomeBannerProps = {
   tagline: string;
-  showName?: boolean;     // default true; set false on sub-pages
-  compact?: boolean;      // default false; smaller padding for sub-pages
+  showName?: boolean;
+  compact?: boolean;
 };
 
 export default function WelcomeBanner({ tagline, showName = true, compact = false }: WelcomeBannerProps) {
@@ -21,19 +21,34 @@ export default function WelcomeBanner({ tagline, showName = true, compact = fals
 
   return (
     <div
-      className={`bg-gradient-to-r from-navy to-navy-700 rounded-2xl ${
+      className={`relative rounded-2xl ${
         compact ? "p-5 mb-4" : "p-8 mb-6"
-      } text-white relative overflow-hidden animate-fade-in-up`}
+      } text-white overflow-hidden animate-fade-in-up shadow-md`}
+      style={{
+        // Hardcoded — stays the SAME in light AND dark mode
+        background: "linear-gradient(135deg, #192A56 0%, #0F1B3D 100%)",
+      }}
     >
-      <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-      <div className="absolute bottom-0 left-1/2 w-48 h-48 bg-gold/10 rounded-full translate-y-1/2 pointer-events-none" />
+      {/* Decorative orbs */}
+      <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/5 rounded-full pointer-events-none blur-2xl" />
+      <div className="absolute -bottom-16 left-1/3 w-48 h-48 rounded-full pointer-events-none blur-2xl" style={{ background: "rgba(198, 163, 94, 0.15)" }} />
+
+      {/* Subtle grid pattern overlay for texture */}
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+          backgroundSize: "32px 32px",
+        }}
+      />
+
       <div className="relative z-10">
         {showName && (
           <h1 className={`font-display font-bold mb-2 ${compact ? "text-2xl" : "text-3xl"}`}>
             Welcome back, {name}!
           </h1>
         )}
-        <p className="text-navy-200 max-w-2xl text-sm md:text-base">{tagline}</p>
+        <p className="text-white/70 max-w-2xl text-sm md:text-base leading-relaxed">{tagline}</p>
       </div>
     </div>
   );

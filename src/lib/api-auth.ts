@@ -42,7 +42,7 @@ export function requireProcurementWrite(auth: { role: UserRole }) {
 }
 
 export function requireLpoApprover(auth: { role: UserRole }) {
-  if (auth.role !== "admin" && auth.role !== "procurement-approver") {
+  if (auth.role !== "procurement-approver") {
     return NextResponse.json({ ok: false, message: "Forbidden: LPO approver access required." }, { status: 403 });
   }
   return null;

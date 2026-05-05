@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "seed:lpo": "tsx scripts/seed-lpo-test-data.ts",
+    "seed:lpo:5000": "tsx scripts/seed-lpo-test-data.ts 5000",
+    "seed:lpo:10000": "tsx scripts/seed-lpo-test-data.ts 10000",
+    "delete:test-lpo": "tsx scripts/delete-test-lpo-data.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -26,6 +30,7 @@
     "autoprefixer": "^10.5.0",
     "postcss": "^8.5.10",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.21.0",
     "typescript": "^5.4.0"
   }
 }
