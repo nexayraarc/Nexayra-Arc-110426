@@ -55,7 +55,7 @@ export default function LogisticsDashboard() {
       <WelcomeBanner tagline="Optimize fleet movements and ensure timely site deliveries." />
       <ModuleSearchBar module="logistics" placeholder="Search vehicles…" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5 hover-lift">
+        <div className="bg-brand-navy text-white rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><Truck size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total Vehicles</p></div>
           <p className="text-2xl font-bold">{kpis.total}</p>
           <p className="text-white/80 text-xs mt-1">Owned: {kpis.owned} · Rented: {kpis.rented}</p>

@@ -69,7 +69,7 @@ export default function CashFlowPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-6 text-white relative overflow-hidden">
+      <div className="bg-brand-navy rounded-2xl p-6 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"/>
         <p className="text-navy dark:text-white-200 text-sm uppercase tracking-wider font-semibold">Total Cash in Hand</p>
         <p className="text-4xl font-bold mt-1">{fmtAED(totalCash)}</p>

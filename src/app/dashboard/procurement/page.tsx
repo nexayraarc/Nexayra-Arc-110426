@@ -18,7 +18,7 @@ type Lpo = { nxrNo: number; clientName: string; vendorName: string; total: numbe
 const COLORS = ["#1c2143", "#c9a84c", "#0f766e", "#b91c1c"];
 
 export default function ProcurementDashboard() {
-   const t = useChartTheme();
+  const t = useChartTheme();
   const [lpos, setLpos] = useState<Lpo[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,19 +61,36 @@ export default function ProcurementDashboard() {
     <div className="space-y-6">
       <WelcomeBanner tagline="Streamline purchasing, manage vendors, and control project costs." />
       <ModuleSearchBar module="procurement" placeholder="Search LPOs, vendors…" />
+
+      {/* KPIs — Pending and Approved tiles are clickable */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5 hover-lift">
+        <Link
+          href="/dashboard/procurement/lpo/history"
+          className="bg-brand-navy text-white rounded-2xl p-5 hover-lift hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+        >
           <div className="flex items-center gap-2 mb-2"><ShoppingCart size={16}/><p className="text-white/80 text-xs uppercase font-bold">Total LPOs</p></div>
           <p className="text-2xl font-bold">{kpis.total}</p>
-        </div>
-        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
+          <p className="text-[10px] text-white/60 mt-1">Click to view all →</p>
+        </Link>
+
+        <Link
+          href="/dashboard/procurement/lpo/history?status=approved"
+          className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift hover:border-green-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2"><CheckCircle size={16} className="text-green-600"/><p className="text-green-600 text-xs uppercase font-bold">Approved</p></div>
           <p className="text-2xl font-bold text-navy dark:text-white">{kpis.approved}</p>
-        </div>
-        <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
+          <p className="text-[10px] text-navy-400 mt-1">Click to view approved →</p>
+        </Link>
+
+        <Link
+          href="/dashboard/procurement/lpo/history?status=pending"
+          className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift hover:border-amber-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2"><Clock size={16} className="text-amber-600"/><p className="text-amber-600 text-xs uppercase font-bold">Pending</p></div>
           <p className="text-2xl font-bold text-navy dark:text-white">{kpis.pending}</p>
-        </div>
+          <p className="text-[10px] text-navy-400 mt-1">Click to view pending →</p>
+        </Link>
+
         <div className="bg-white dark:bg-navy-800 border border-navy-100 dark:border-navy-700 rounded-2xl p-5 hover-lift">
           <div className="flex items-center gap-2 mb-2"><TrendingUp size={16} className="text-gold"/><p className="text-gold text-xs uppercase font-bold">Total Value</p></div>
           <p className="text-2xl font-bold text-navy dark:text-white">{fmtAED(kpis.totalValue)}</p>
@@ -89,8 +106,8 @@ export default function ProcurementDashboard() {
                 <Pie data={byVendor} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={3} dataKey="value" stroke="none">
                   {byVendor.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]}/>)}
                 </Pie>
-                <Tooltip formatter={(v: number) => fmtAED(v)}/>
-                <Legend wrapperStyle={{ fontSize: "11px" }}/>
+                <Tooltip formatter={(v: number) => fmtAED(v)} contentStyle={t.tooltipStyle}/>
+                <Legend wrapperStyle={{ fontSize: "11px", color: t.legendText }}/>
               </PieChart>
             </ResponsiveContainer>
           )}
@@ -100,10 +117,10 @@ export default function ProcurementDashboard() {
           <h3 className="font-lato text-lg font-bold text-navy dark:text-white mb-4">LPOs by Month ({new Date().getFullYear()})</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={monthly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-              <XAxis dataKey="month" style={{ fontSize: "11px" }}/>
-              <YAxis style={{ fontSize: "11px" }}/>
-              <Tooltip/>
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }}/>
+              <YAxis tick={{ fontSize: 11, fill: t.axisText }}/>
+              <Tooltip contentStyle={t.tooltipStyle}/>
               <Bar dataKey="count" fill="#1c2143" name="LPOs" radius={[4,4,0,0]}/>
             </BarChart>
           </ResponsiveContainer>
@@ -133,12 +150,12 @@ export default function ProcurementDashboard() {
         )}
       </div>
       <FloatingActionMenu
-  actions={[
-    { icon: ShoppingCart, label: "Generate New LPO",       href: "/dashboard/procurement/lpo" },
-    { icon: PackageCheck, label: "Log Goods Receipt Note", onClick: () => alert("GRN module coming soon.") },
-    { icon: Building2, label: "Add New Vendor",          href: "/dashboard/procurement/lpo?action=newVendor" },
-  ]}
-/>
+        actions={[
+          { icon: ShoppingCart, label: "Generate New LPO",       href: "/dashboard/procurement/lpo" },
+          { icon: PackageCheck, label: "Log Goods Receipt Note", onClick: () => alert("GRN module coming soon.") },
+          { icon: Building2, label: "Add New Vendor",          href: "/dashboard/procurement/lpo?action=newVendor" },
+        ]}
+      />
     </div>
   );
 }

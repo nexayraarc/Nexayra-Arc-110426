@@ -78,7 +78,7 @@ export default function AccountsDashboard() {
       <ModuleSearchBar module="accounts" placeholder="Search expenses, invoices, partners, bank accounts…" />
       {/* KPIs */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-navy to-navy-700 text-white rounded-2xl p-5"><p className="text-white dark:text-white-200 text-xs uppercase font-bold tracking-wider">Cash in Hand</p><p className="text-2xl font-bold text-white mt-1">{fmtAED(kpis.totalCash)}</p></div>
+        <div className="bg-brand-navy text-white rounded-2xl p-5"><p className="text-white dark:text-white-200 text-xs uppercase font-bold tracking-wider">Cash in Hand</p><p className="text-2xl font-bold text-white mt-1">{fmtAED(kpis.totalCash)}</p></div>
         <div className="bg-white dark:bg-navy-800 border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-green-600 text-xs uppercase font-bold tracking-wider">YTD Revenue</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdRevenue)}</p></div>
         <div className="bg-white dark:bg-navy-800 border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-red-500 text-xs uppercase font-bold tracking-wider">YTD Expenses</p><p className="text-2xl font-bold text-navy dark:text-white mt-1">{fmtAED(kpis.ytdExp)}</p></div>
         <div className="bg-white dark:bg-navy-800 border border-navy-100 rounded-2xl p-5 hover-lift"><p className="text-gold text-xs uppercase font-bold tracking-wider">YTD Profit</p><p className={`text-2xl font-bold mt-1 ${kpis.ytdProfit >= 0 ? "text-green-600" : "text-red-500"}`}>{fmtAED(kpis.ytdProfit)}</p></div>
@@ -93,8 +93,8 @@ export default function AccountsDashboard() {
                 <Pie data={byCategory} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={3} dataKey="value" stroke="none">
                   {byCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]}/>)}
                 </Pie>
-                <Tooltip formatter={(v: number) => fmtAED(v)}/>
-                <Legend wrapperStyle={{ fontSize: "12px" }}/>
+                <Tooltip formatter={(v: number) => fmtAED(v)} contentStyle={t.tooltipStyle}/>
+                <Legend wrapperStyle={{ fontSize: "12px", color: t.legendText }}/>
               </PieChart>
             </ResponsiveContainer>
           )}
@@ -104,11 +104,11 @@ export default function AccountsDashboard() {
           <h3 className="font-latoxt-lg font-bold text-navy dark:text-white mb-4">Monthly Revenue vs Expenses ({new Date().getFullYear()})</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={monthlyFlow}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-              <XAxis dataKey="month" style={{ fontSize: "11px" }}/>
-              <YAxis style={{ fontSize: "11px" }}/>
-              <Tooltip formatter={(v: number) => fmtAED(v)}/>
-              <Legend wrapperStyle={{ fontSize: "12px" }}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }}/>
+              <YAxis tick={{ fontSize: 11, fill: t.axisText }}/>
+              <Tooltip formatter={(v: number) => fmtAED(v)} contentStyle={t.tooltipStyle}/>
+              <Legend wrapperStyle={{ fontSize: "12px", color: t.legendText }}/>
               <Bar dataKey="revenue" fill="#0f766e" name="Revenue"/>
               <Bar dataKey="expenses" fill="#b91c1c" name="Expenses"/>
             </BarChart>
@@ -120,10 +120,10 @@ export default function AccountsDashboard() {
         <h3 className="font-latoxt-lg font-bold text-navy dark:text-white mb-4">Profit Trend</h3>
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={monthlyFlow.map(m => ({ ...m, profit: m.revenue - m.expenses }))}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-            <XAxis dataKey="month" style={{ fontSize: "11px" }}/>
-            <YAxis style={{ fontSize: "11px" }}/>
-            <Tooltip formatter={(v: number) => fmtAED(v)}/>
+            <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }}/>
+            <YAxis tick={{ fontSize: 11, fill: t.axisText }}/>
+            <Tooltip formatter={(v: number) => fmtAED(v)} contentStyle={t.tooltipStyle}/>
             <Line type="monotone" dataKey="profit" stroke="#c9a84c" strokeWidth={3} dot={{ fill: "#c9a84c", r: 4 }}/>
           </LineChart>
         </ResponsiveContainer>

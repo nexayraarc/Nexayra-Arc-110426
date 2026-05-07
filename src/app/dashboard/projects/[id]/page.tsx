@@ -209,7 +209,7 @@ const generatePosts = async () => {
       </button>
 
       {/* Header card */}
-      <div className="bg-gradient-to-r from-navy to-navy-700 rounded-2xl p-6 mb-6 text-white relative overflow-hidden animate-fade-in-up">
+      <div className="bg-brand-navy rounded-2xl p-6 mb-6 text-white relative overflow-hidden animate-fade-in-up">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3" />
         <div className="absolute bottom-0 left-1/2 w-48 h-48 bg-gold/10 rounded-full translate-y-1/2" />
         <div className="relative z-10">
@@ -232,7 +232,7 @@ const generatePosts = async () => {
       {/* KPI grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
-          { label: "Contract", value: fmtAED(project.contractValue || 0), icon: DollarSign, color: "from-navy to-navy-700", text: "text-white" },
+          { label: "Contract", value: fmtAED(project.contractValue || 0), icon: DollarSign, brand: true, text: "text-white" },
           { label: "Budget", value: fmtAED(project.budgetedCost || 0), icon: Briefcase, color: "from-indigo-600 to-indigo-700", text: "text-white" },
           { label: "Spent", value: fmtAED(stats.spent), icon: TrendingUp, color: stats.overBudget ? "from-rose-600 to-rose-700" : "from-gold to-gold-500", text: stats.overBudget ? "text-white" : "text-navy" },
           { label: "Billed", value: fmtAED(stats.billed), icon: FileText, color: "from-teal-600 to-teal-700", text: "text-white" },
@@ -242,7 +242,7 @@ const generatePosts = async () => {
           { label: "Days Left", value: stats.daysLeft >= 0 ? `${stats.daysLeft}` : `${Math.abs(stats.daysLeft)} late`, icon: Calendar, color: stats.daysLeft < 0 ? "from-rose-600 to-rose-700" : "from-slate-600 to-slate-700", text: "text-white" },
         ].map((k, i) => (
           <div key={k.label}
-            className={`bg-gradient-to-br ${k.color} ${k.text} rounded-2xl p-4 shadow-sm animate-fade-in-up`}
+            className={`${(k as any).brand ? "bg-brand-navy" : `bg-gradient-to-br ${(k as any).color}`} ${k.text} rounded-2xl p-4 shadow-sm animate-fade-in-up`}
             style={{ animationDelay: `${i * 0.04}s` }}>
             <k.icon size={16} className="opacity-80 mb-2" />
             <p className="text-[10px] font-bold uppercase opacity-80">{k.label}</p>

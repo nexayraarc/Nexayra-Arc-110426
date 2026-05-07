@@ -132,12 +132,12 @@ export default function AssetsPage() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
         {[
           { label: "Total Value", value: fmtAED(stats.totalValue), icon: DollarSign, color: "from-emerald-600 to-emerald-700" },
-          { label: "Acquisition Cost", value: fmtAED(stats.purchaseValue), icon: Package, color: "from-navy to-navy-700" },
+          { label: "Acquisition Cost", value: fmtAED(stats.purchaseValue), icon: Package, brand: true },
           { label: "On Site", value: stats.onSite, icon: MapPin, color: "from-gold to-gold-500", text: "text-navy" },
           { label: "In Office", value: stats.inOffice, icon: Wrench, color: "from-teal-600 to-teal-700" },
           { label: "Needs Repair", value: stats.needsRepair, icon: Activity, color: "from-rose-600 to-rose-700" },
         ].map((k, i) => (
-          <div key={k.label} className={`bg-gradient-to-br ${k.color} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`} style={{ animationDelay: `${i * 0.04}s` }}>
+          <div key={k.label} className={`${(k as any).brand ? "bg-brand-navy" : `bg-gradient-to-br ${(k as any).color}`} ${(k as any).text || "text-white"} rounded-2xl p-4 shadow-sm animate-fade-in-up`} style={{ animationDelay: `${i * 0.04}s` }}>
             <k.icon size={16} className="opacity-80 mb-1.5" />
             <p className="text-[10px] font-bold uppercase opacity-80">{k.label}</p>
             <p className="text-base font-bold mt-1 truncate">{k.value}</p>

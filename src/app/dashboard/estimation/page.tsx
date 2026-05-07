@@ -9,11 +9,13 @@ import Link from "next/link";
 import WelcomeBanner from "@/components/WelcomeBanner";
 import ModuleSearchBar from "@/components/ModuleSearchBar";
 import FloatingActionMenu from "@/components/FloatingActionMenu";
+import { useChartTheme } from "@/lib/chart-theme";
 import { Plus, Copy } from "lucide-react";
 
 type Quotation = { quotationNo: string; clientName?: string; to?: string; totalWithVat: number; createdAt: string };
 
 export default function EstimationDashboard() {
+  const t = useChartTheme();
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -66,10 +68,10 @@ export default function EstimationDashboard() {
         <h3 className="font-lato text-lg font-bold text-navy dark:text-white mb-4">Quotation Value by Month ({new Date().getFullYear()})</h3>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={monthly}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e8eaf5"/>
-            <XAxis dataKey="month" style={{ fontSize: "11px" }}/>
-            <YAxis style={{ fontSize: "11px" }}/>
-            <Tooltip formatter={(v: number) => fmtAED(v)}/>
+            <CartesianGrid strokeDasharray="3 3" stroke={t.grid}/>
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: t.axisText }}/>
+            <YAxis tick={{ fontSize: 11, fill: t.axisText }}/>
+            <Tooltip formatter={(v: number) => fmtAED(v)} contentStyle={t.tooltipStyle}/>
             <Bar dataKey="value" fill="#c9a84c" name="Value" radius={[4,4,0,0]}/>
           </BarChart>
         </ResponsiveContainer>

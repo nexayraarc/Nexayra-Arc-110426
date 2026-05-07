@@ -7,10 +7,12 @@ import { auth } from "@/lib/firebase";
 import { fmtAED } from "@/lib/format";
 import type { LpoItem, LpoPdfData } from "./LpoDocument";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
-import { Download, Pencil, Save, X, CheckCircle, Stamp, History as HistoryIcon, Plus, Trash2 } from "lucide-react";
+import { Download, Pencil, Save, X, CheckCircle, Stamp, History as HistoryIcon, Plus, Trash2, Filter } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 type LpoDoc = LpoPdfData & { _docId: string; revisionOf?: string; revisionNumber?: number; createdAt?: string };
 type ItemField = keyof Pick<LpoItem, "description" | "qty" | "uom" | "amount" | "discount">;
+type StatusFilter = "all" | "approved" | "pending";
 
 function normalizeItems(items: any[] | undefined): LpoItem[] {
   if (!Array.isArray(items) || items.length === 0) {
@@ -53,6 +55,9 @@ function lineTotal(item: LpoItem) {
 
 export default function LpoHistory() {
   const { role, canApproveLpo, canWriteProcurement } = useRole();
+  const searchParams = useSearchParams();
+  const initialStatus = (searchParams.get("status") as StatusFilter) || "all";
+
   const [lpos, setLpos] = useState<LpoDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
@@ -62,6 +67,9 @@ export default function LpoHistory() {
   const [approvalPassword, setApprovalPassword] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    ["all", "approved", "pending"].includes(initialStatus) ? initialStatus : "all"
+  );
 
   const fetch_ = async () => {
     try { const r = await apiCall<{lpos: LpoDoc[]}>("/api/lpo"); setLpos(r.lpos || []); }
@@ -70,7 +78,7 @@ export default function LpoHistory() {
   };
   useEffect(()=>{fetch_();},[]);
 
-  // Group revisions together
+  // Group revisions together — applies to ALL LPOs first
   const grouped = useMemo(() => {
     const g = new Map<string, LpoDoc[]>();
     lpos.forEach(l => {
@@ -81,6 +89,24 @@ export default function LpoHistory() {
     g.forEach(arr => arr.sort((a, b) => (b.revisionNumber || 0) - (a.revisionNumber || 0)));
     return Array.from(g.values()).sort((a, b) => String(b[0].createdAt).localeCompare(String(a[0].createdAt)));
   }, [lpos]);
+
+  // Filter the grouped LPOs based on the latest revision's status
+  const filteredGrouped = useMemo(() => {
+    if (statusFilter === "all") return grouped;
+    return grouped.filter(group => {
+      const latest = group[0];
+      if (statusFilter === "approved") return !!latest.approved;
+      if (statusFilter === "pending") return !latest.approved;
+      return true;
+    });
+  }, [grouped, statusFilter]);
+
+  // Counts for the filter UI
+  const counts = useMemo(() => {
+    const approved = grouped.filter(g => g[0].approved).length;
+    const pending = grouped.filter(g => !g[0].approved).length;
+    return { all: grouped.length, approved, pending };
+  }, [grouped]);
 
   const handleDownload = async (lpo: LpoDoc) => {
     const [{pdf}, {default: Doc}] = await Promise.all([import("@react-pdf/renderer"), import("./LpoDocument")]);
@@ -146,7 +172,7 @@ export default function LpoHistory() {
         ...prev,
         items: nextItems,
         totalDiscount: Number(totals.totalDiscount.toFixed(2)),
-        subtotal: Number(totals.subtotal.toFixed(2)),
+        subtotal: Number(totals.vat.toFixed(2)),
         vat: Number(totals.vat.toFixed(2)),
         total: Number(totals.total.toFixed(2)),
       };
@@ -193,12 +219,53 @@ export default function LpoHistory() {
   const inp = "px-3 py-2 bg-white dark:bg-navy-800 border border-navy-200 dark:border-navy-600 rounded-lg text-navy dark:text-white text-sm w-full";
   const lbl = "text-xs text-navy-400 dark:text-navy-300 font-semibold mb-1 block";
 
+  // Filter button styling helper
+  const filterBtnClass = (active: boolean) =>
+    `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+      active
+        ? "bg-navy text-white dark:bg-gold dark:text-navy"
+        : "bg-navy-50 dark:bg-navy-700 text-navy dark:text-white hover:bg-navy-100 dark:hover:bg-navy-600"
+    }`;
+
   return (
     <div className="max-w-5xl mx-auto animate-fade-in-up">
       {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>}
-      {grouped.length === 0 ? (<div className="text-center py-16 text-navy-300">No LPOs yet.</div>) : (
+
+      {/* Filter bar */}
+      {grouped.length > 0 && (
+        <div className="mb-5 flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 text-navy-400 dark:text-navy-300 text-xs font-semibold mr-1">
+            <Filter size={14} /> Filter:
+          </div>
+          <button onClick={() => setStatusFilter("all")} className={filterBtnClass(statusFilter === "all")}>
+            All <span className="opacity-70">({counts.all})</span>
+          </button>
+          <button onClick={() => setStatusFilter("approved")} className={filterBtnClass(statusFilter === "approved")}>
+            <CheckCircle size={12} /> Approved <span className="opacity-70">({counts.approved})</span>
+          </button>
+          <button onClick={() => setStatusFilter("pending")} className={filterBtnClass(statusFilter === "pending")}>
+            <Stamp size={12} /> Pending <span className="opacity-70">({counts.pending})</span>
+          </button>
+          {statusFilter !== "all" && (
+            <button onClick={() => setStatusFilter("all")} className="ml-auto text-xs text-navy-400 dark:text-navy-300 hover:text-navy dark:hover:text-white flex items-center gap-1">
+              <X size={12} /> Clear filter
+            </button>
+          )}
+        </div>
+      )}
+
+      {grouped.length === 0 ? (
+        <div className="text-center py-16 text-navy-300">No LPOs yet.</div>
+      ) : filteredGrouped.length === 0 ? (
+        <div className="text-center py-16 text-navy-300">
+          No {statusFilter} LPOs found.
+          <button onClick={() => setStatusFilter("all")} className="block mx-auto mt-2 text-sm text-navy dark:text-gold font-semibold hover:underline">
+            Show all
+          </button>
+        </div>
+      ) : (
         <div className="space-y-4">
-          {grouped.map(group => {
+          {filteredGrouped.map(group => {
             const latest = group[0];
             const older = group.slice(1);
             const l = latest;
@@ -283,6 +350,7 @@ export default function LpoHistory() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-bold text-lg text-navy dark:text-white">LPO #{l.nxrNo}</h3>
                           {l.approved && <span className="flex items-center gap-1 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-full"><CheckCircle size={12}/> Approved</span>}
+                          {!l.approved && <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs rounded-full"><Stamp size={12}/> Pending</span>}
                           {older.length > 0 && <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs rounded-full">{older.length} older revision{older.length>1?"s":""}</span>}
                         </div>
                         <p className="text-navy-400 text-sm">{l.clientName} · {l.vendorName}</p>
