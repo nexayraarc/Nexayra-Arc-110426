@@ -69,7 +69,6 @@ type AuditLog = {
 };
 type VaultDoc = { id: string; label: string; expiryDate?: string | null; category?: string };
 
-const DEPT_COLORS = ["#1c2143", "#c9a84c", "#0f766e", "#4150aa", "#6b56b8", "#b91c1c", "#ea580c"];
 const AGING_COLORS = { "0-30": "#0f766e", "31-60": "#c9a84c", "61-90": "#ea580c", "90+": "#b91c1c" };
 
 function actionVerb(action: string): string {
@@ -179,8 +178,8 @@ export default function CompanyOverviewPage() {
   }, [quotations, projects]);
 
   const winLossData = [
-    { name: "Won (Converted)", value: wonQuotations.length, fill: "#0f766e" },
-    { name: "Pending", value: quarterQuotations.length - wonQuotations.length, fill: "#c9a84c" },
+    { name: "Won (Converted)", value: wonQuotations.length, fill: t.series.revenue },
+    { name: "Pending", value: quarterQuotations.length - wonQuotations.length, fill: t.series.accent },
   ].filter((d) => d.value > 0);
 
   // ---------- Pipeline ----------
@@ -190,10 +189,10 @@ export default function CompanyOverviewPage() {
       .reduce((s, p) => s + (p.contractValue || 0), 0);
     const activeTendersValue = pendingValue;
     return [
-      { name: "Active Tenders", value: activeTendersValue, fill: "#c9a84c" },
-      { name: "Secured Projects", value: activeProjectsValue, fill: "#1c2143" },
+      { name: "Active Tenders", value: activeTendersValue, fill: t.series.accent },
+      { name: "Secured Projects", value: activeProjectsValue, fill: t.series.primary },
     ];
-  }, [projects, pendingValue]);
+  }, [projects, pendingValue, t.series.accent, t.series.primary]);
   const pipelineValue = pipelineData[1].value;
 
   // ---------- Workforce ----------
@@ -438,11 +437,11 @@ export default function CompanyOverviewPage() {
             <h2 className="font-display text-lg font-bold">Executive Flash Briefing</h2>
           </div>
           {briefing.length === 0 ? (
-            <p className="text-navy-200 text-sm">All quiet on the dashboard — no urgent items today.</p>
+            <p className="text-white/85 text-sm">All quiet on the dashboard — no urgent items today.</p>
           ) : (
             <ul className="space-y-1.5">
               {briefing.map((b, i) => (
-                <li key={i} className={`text-sm flex items-start gap-2 ${b.tone === "warn" ? "text-amber-200" : b.tone === "good" ? "text-emerald-200" : "text-navy-100"}`}>
+                <li key={i} className={`text-sm flex items-start gap-2 ${b.tone === "warn" ? "text-amber-200" : b.tone === "good" ? "text-emerald-200" : "text-white/85"}`}>
                   <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${b.tone === "warn" ? "bg-amber-300" : b.tone === "good" ? "bg-emerald-300" : "bg-gold"}`} />
                   <span>{b.text}</span>
                 </li>
@@ -460,7 +459,7 @@ export default function CompanyOverviewPage() {
             <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center"><Shield size={20} className="text-gold" /></div>
             <h3 className="font-display text-base font-bold">Corporate Vault</h3>
           </div>
-          <p className="text-navy-200 text-xs">Trade licenses, IDs, certificates with auto-extraction & expiry alerts.</p>
+          <p className="text-white/85 text-xs">Trade licenses, IDs, certificates with auto-extraction & expiry alerts.</p>
         </Link>
 
         <Link href="/dashboard/marketing/brand-hub"
@@ -509,7 +508,7 @@ export default function CompanyOverviewPage() {
           <div className="relative h-48 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <RadialBarChart cx="50%" cy="65%" innerRadius="70%" outerRadius="100%" startAngle={180} endAngle={0} data={[{ name: "runway", value: Math.min(runwayMonths, 12), fill: runwayColor }]}>
-                <RadialBar dataKey="value" cornerRadius={10} background={{ fill: "#e5e7eb" }} />
+                <RadialBar dataKey="value" cornerRadius={10} background={{ fill: t.grid }} />
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pt-6">
@@ -534,8 +533,8 @@ export default function CompanyOverviewPage() {
                 <Pie data={winLossData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3} dataKey="value" stroke="none">
                   {winLossData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                 </Pie>
-                <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip contentStyle={t.tooltipStyle} />
+                <Legend wrapperStyle={{ fontSize: 11, color: t.legendText }} />
               </PieChart>
             </ResponsiveContainer>
           )}
@@ -551,9 +550,9 @@ export default function CompanyOverviewPage() {
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={pipelineData} layout="vertical" margin={{ left: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
-              <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: t.axisText }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: t.axisText }} width={100} />
-              <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} formatter={(v: number) => fmtAED(v)} />
+              <Tooltip contentStyle={t.tooltipStyle} formatter={(v: number) => fmtAED(v)} />
               <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                 {pipelineData.map((d, i) => <Cell key={i} fill={d.fill} />)}
               </Bar>
@@ -594,11 +593,11 @@ export default function CompanyOverviewPage() {
             <ResponsiveContainer width="100%" height={Math.max(120, deptData.length * 28)}>
               <BarChart data={deptData} layout="vertical" margin={{ left: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={t.grid} horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
+                <XAxis type="number" tick={{ fontSize: 10, fill: t.axisText }} allowDecimals={false} />
                 <YAxis type="category" dataKey="dept" tick={{ fontSize: 11, fill: t.axisText }} width={120} />
-                <Tooltip contentStyle={{ background: "#1c2143", border: "none", borderRadius: 10, color: "#fff", fontSize: 12 }} />
+                <Tooltip contentStyle={t.tooltipStyle} />
                 <Bar dataKey="count" radius={[0, 6, 6, 0]}>
-                  {deptData.map((_, i) => <Cell key={i} fill={DEPT_COLORS[i % DEPT_COLORS.length]} />)}
+                  {deptData.map((_, i) => <Cell key={i} fill={t.palette[i % t.palette.length]} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

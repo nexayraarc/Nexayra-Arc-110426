@@ -540,3 +540,54 @@ a, button {
 .dark img[alt="Nexayra Arc"]:not([src*="-light"]) {
   filter: brightness(0) invert(1);
 }
+
+/* ============================================================
+   RECHARTS TOOLTIP — strong contrast in BOTH light and dark mode
+   ============================================================ */
+
+/* Default tooltip — light mode */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(25, 42, 86, 0.15) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px -8px rgba(25, 42, 86, 0.25) !important;
+  padding: 10px 14px !important;
+  color: #192A56 !important;
+}
+
+/* Tooltip label (the "Secured Projects" line) */
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-label {
+  color: #192A56 !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Tooltip item list (the value lines) */
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item {
+  color: #4a5568 !important;
+  padding: 2px 0 !important;
+}
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-name,
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-value,
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-separator,
+.recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-unit {
+  color: #4a5568 !important;
+}
+
+/* Dark mode overrides — high contrast popup against dark surfaces */
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #0F1B3D !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.7) !important;
+  color: #ffffff !important;
+}
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-label {
+  color: #ffffff !important;
+}
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item,
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-name,
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-value,
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-separator,
+.dark .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-unit {
+  color: #E6EAF5 !important;
+}
